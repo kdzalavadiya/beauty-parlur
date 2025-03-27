@@ -1,0 +1,16 @@
+# robots.txt for Real Bridal Studio
+User-agent: *
+Allow: /
+Allow: /images/
+Allow: /css/
+Allow: /js/
+
+# Disallow admin files and any potential sensitive areas
+Disallow: /admin/
+Disallow: /includes/
+Disallow: /backup/
+Disallow: /temp/
+Disallow: /private/
+
+# Sitemap location
+Sitemap: https://www.Realbridal.com/sitemap.xml 
