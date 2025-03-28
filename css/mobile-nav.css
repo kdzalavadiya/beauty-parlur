@@ -15,17 +15,17 @@
     top: 0;
     right: 0;
     width: 280px;
-    height: 100%;
-    background: #fff;
-    z-index: 100;
-    transform: translateX(100%);
-    transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    height: 100vh;
+    max-height: 100%;
+    background: white;
+    z-index: 1000;
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    will-change: transform; /* Performance optimization */
     display: flex;
     flex-direction: column;
+    will-change: transform; /* Performance optimization */
+    transform: translateX(100%);
 }
 
 .mobile-sidebar.active {
@@ -49,49 +49,56 @@
     text-decoration: none;
 }
 
+/* Sidebar Close Button */
 .sidebar-close {
-    background: none;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background: transparent;
     border: none;
-    font-size: 24px;
-    color: #666;
+    color: #333;
     cursor: pointer;
-    padding: 8px;
+    z-index: 1001;
     border-radius: 50%;
     display: flex;
-    align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
-    width: 44px;
-    height: 44px;
-    margin: -8px;
+    align-items: center;
+    transition: all 0.3s ease;
 }
 
-.sidebar-close:hover, 
-.sidebar-close:focus {
+.sidebar-close:hover {
+    background-color: rgba(241, 120, 182, 0.1);
     color: #F178B6;
-    background: rgba(241, 120, 182, 0.1);
+}
+
+.sidebar-close i {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-close:hover i {
+    transform: rotate(90deg);
 }
 
 /* Sidebar Content */
 .sidebar-content {
     flex: 1;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Sidebar Navigation */
 .sidebar-nav {
-    padding: 20px;
-    flex: 1;
-}
-
-.sidebar-nav ul {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0 0 20px 0;
 }
 
 .sidebar-nav li {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .sidebar-nav a {
@@ -101,69 +108,83 @@
     font-weight: 500;
     transition: all 0.2s ease;
     display: block;
-    padding: 10px 0;
+    padding: 12px 15px;
     position: relative;
     border-radius: 4px;
 }
 
-.sidebar-nav a::after {
+.sidebar-nav a::before {
     content: '';
     position: absolute;
-    bottom: 0;
-    left: 0;
+    bottom: 8px;
+    left: 15px;
     width: 0;
     height: 2px;
-    background: #F178B6;
+    background: var(--primary-color);
     transition: width 0.3s ease;
 }
 
 .sidebar-nav a:hover, 
 .sidebar-nav a:focus,
 .sidebar-nav a.active {
-    color: #F178B6;
+    color: var(--primary-color);
+    background-color: rgba(241, 120, 182, 0.05);
 }
 
-.sidebar-nav a:hover::after, 
-.sidebar-nav a:focus::after,
-.sidebar-nav a.active::after {
+.sidebar-nav a:hover::before, 
+.sidebar-nav a:focus::before,
+.sidebar-nav a.active::before {
     width: 30px;
 }
 
 /* Book Now Button */
 .sidebar-btn {
-    display: inline-block;
-    padding: 12px 25px;
-    margin-top: 20px;
-    width: 100%;
+    display: block;
+    padding: 14px 25px;
+    margin: 10px 0;
     text-align: center;
     background: var(--primary-color);
     color: white;
     border: none;
     border-radius: 50px;
     font-weight: 600;
+    font-size: 15px;
     text-decoration: none;
     transition: all 0.3s ease;
     box-shadow: 0 5px 15px rgba(241, 120, 182, 0.3);
-    transform: translateY(20px);
-    opacity: 0;
-    -webkit-tap-highlight-color: rgba(241, 120, 182, 0.1);
+    position: relative;
+    overflow: hidden;
 }
 
-.mobile-sidebar.active .sidebar-btn {
-    transform: translateY(0);
-    opacity: 1;
-    transition: transform 0.4s ease 0.4s, opacity 0.4s ease 0.4s, background 0.3s ease, box-shadow 0.3s ease;
-}
-
-.sidebar-btn:hover {
+.sidebar-btn:hover,
+.sidebar-btn:focus {
     background: #e06aa5;
     box-shadow: 0 8px 20px rgba(241, 120, 182, 0.4);
     transform: translateY(-2px);
+    color: white;
 }
 
 .sidebar-btn:active {
     transform: scale(0.98);
     background: #d056a0;
+}
+
+/* Ripple effect for touch feedback */
+.sidebar-btn .ripple,
+.sidebar-nav a .ripple {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple-animation 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(2.5);
+        opacity: 0;
+    }
 }
 
 /* Sidebar Footer */
@@ -219,11 +240,11 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 99;
+    z-index: 999;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.4s ease, visibility 0.4s ease;
-    backdrop-filter: blur(2px); /* Blur background when sidebar is open */
+    will-change: opacity; /* Performance optimization */
 }
 
 .sidebar-overlay.active {
@@ -237,7 +258,6 @@
     height: 44px;
     cursor: pointer;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 8px;
@@ -245,50 +265,23 @@
     border: 2px solid rgba(255, 255, 255, 0.8);
     margin-right: 0;
     position: relative;
-    z-index: 1001;
-    border-radius: 4px;
+    border-radius: 50%;
     transition: all 0.3s ease;
-    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .menu-toggle:hover {
-    background-color: #e066a2;
+    background: #e06aa5;
+    transform: scale(1.05);
 }
 
-/* Hamburger lines */
-.menu-toggle span {
-    display: block;
-    width: 28px;
-    height: 3px;
-    background: #ffffff;
-    border-radius: 2px;
-    transition: all 0.3s ease;
-    position: relative;
-    box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+.menu-toggle i {
+    color: white;
+    font-size: 20px;
+    transition: transform 0.3s ease;
 }
 
-/* Specific positioning for each line with enough spacing */
-.menu-toggle span:nth-child(1) {
-    margin-bottom: 7px;
-}
-
-.menu-toggle span:nth-child(2) {
-    margin-bottom: 7px;
-}
-
-/* Active state (X) animation */
-.menu-toggle.active span:nth-child(1) {
-    transform: rotate(45deg) translate(6px, 6px);
-}
-
-.menu-toggle.active span:nth-child(2) {
-    opacity: 0;
-    transform: translateX(-20px);
-}
-
-.menu-toggle.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(6px, -6px);
+.menu-toggle.active i {
+    transform: rotate(90deg);
 }
 
 /* Animations */
@@ -321,8 +314,9 @@
     }
 }
 
-/* Hide the original .nav-links on mobile */
+/* Mobile-specific enhancements */
 @media (max-width: 768px) {
+    /* Navigation improvements */
     .nav-links {
         display: none;
     }
@@ -335,22 +329,62 @@
     .nav-actions {
         display: flex !important;
         margin-right: 10px !important;
+        align-items: center;
+        justify-content: flex-end;
+    }
+    
+    .nav-container {
+        padding: 10px 0;
+    }
+    
+    /* Sidebar touch improvements */
+    .sidebar-nav a:active {
+        background-color: rgba(241, 120, 182, 0.1);
+    }
+    
+    /* Scrollbar styling */
+    .mobile-sidebar {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(241, 120, 182, 0.3) transparent;
+        padding-bottom: 20px; /* Add space at bottom */
+    }
+    
+    .mobile-sidebar::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .mobile-sidebar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    .mobile-sidebar::-webkit-scrollbar-thumb {
+        background: rgba(241, 120, 182, 0.3);
+        border-radius: 4px;
+    }
+    
+    /* Improve pull-to-refresh experience */
+    body.nav-open {
+        overflow: hidden;
+        touch-action: none; /* Prevent scroll bounce on iOS */
+        position: fixed;
+        width: 100%;
+        height: 100%;
+    }
+    
+    /* Improve touch targets */
+    .sidebar-nav a, 
+    .sidebar-btn, 
+    .sidebar-close, 
+    .sidebar-social a {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
     }
 }
 
-/* Add ripple effect */
+/* Remove conflicting ripple styles */
 .sidebar-nav a::after, .sidebar-btn::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 5px;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.5);
-    opacity: 0;
-    border-radius: 100%;
-    transform: scale(1, 1) translate(-50%, -50%);
-    transform-origin: 50% 50%;
+    content: none;
 }
 
 @keyframes ripple {
@@ -365,7 +399,7 @@
 }
 
 .sidebar-nav a:active::after, .sidebar-btn:active::after {
-    animation: ripple 0.5s ease-out;
+    animation: none;
 }
 
 /* Add haptic feedback hint */
@@ -382,71 +416,4 @@
 .sidebar-close:focus-visible {
     outline: 2px solid var(--primary-color);
     outline-offset: 3px;
-}
-
-/* Mobile Navigation */
-.nav-actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-@media (max-width: 768px) {
-    .nav-container {
-        padding: 10px 0;
-    }
-
-    .nav-actions {
-        margin-right: 5px;
-    }
-    
-    .nav-links {
-        display: none;
-    }
-}
-
-/* Add touchable feedback for improved touch interaction */
-@media (max-width: 768px) {
-    .sidebar-nav a {
-        margin-bottom: 5px;
-        padding: 12px 15px;
-    }
-    
-    .sidebar-nav a:active {
-        background-color: rgba(241, 120, 182, 0.1);
-        transform: scale(0.98);
-    }
-    
-    .sidebar-nav a::after {
-        bottom: 8px;
-        left: 15px;
-    }
-    
-    /* Improve pull-to-refresh experience */
-    body.nav-open {
-        overflow: hidden;
-        touch-action: none; /* Prevent scroll bounce on iOS */
-        position: fixed;
-        width: 100%;
-        height: 100%;
-    }
-    
-    /* Momentum scrolling for sidebar */
-    .mobile-sidebar {
-        scrollbar-width: thin;
-        scrollbar-color: rgba(241, 120, 182, 0.3) transparent;
-    }
-    
-    .mobile-sidebar::-webkit-scrollbar {
-        width: 4px;
-    }
-    
-    .mobile-sidebar::-webkit-scrollbar-track {
-        background: transparent;
-    }
-    
-    .mobile-sidebar::-webkit-scrollbar-thumb {
-        background: rgba(241, 120, 182, 0.3);
-        border-radius: 4px;
-    }
 } 

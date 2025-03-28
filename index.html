@@ -129,9 +129,7 @@
             <a href="#" class="logo">New Real Bridal</a>
             <div class="nav-actions">
                 <button class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <i class="fas fa-bars"></i>
                 </button>
                 <ul class="nav-links" aria-hidden="true">
                     <li><a href="#home">Home</a></li>
@@ -150,7 +148,9 @@
     <div class="mobile-sidebar" aria-hidden="true" role="dialog" aria-label="Navigation menu">
         <div class="sidebar-header">
             <a href="#" class="sidebar-logo">New Real Bridal</a>
-            <button class="sidebar-close" aria-label="Close navigation menu">&times;</button>
+            <button class="sidebar-close" aria-label="Close navigation menu">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
         <div class="sidebar-content">
             <ul class="sidebar-nav">
@@ -622,14 +622,14 @@
                     <h3>Send Us a Message</h3>
                     <form id="contact-form">
                         <div class="form-row">
-                            <div class="form-group">
-                                <label for="name">Your Name</label>
-                                <input type="text" id="name" name="name" class="form-control" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="email">Your Email</label>
-                                <input type="email" id="email" name="email" class="form-control" required>
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Your Email</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
                             </div>
                         </div>
                         
@@ -960,5 +960,10 @@
     
     <!-- Booking script -->
     <script src="js/booking.js"></script>
+    
+    <!-- Back to Top Button -->
+    <button class="back-to-top" aria-label="Back to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 </body>
 </html> 

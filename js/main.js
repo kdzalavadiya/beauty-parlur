@@ -100,46 +100,178 @@
      */
     function initNavigation() {
         const navToggle = document.querySelector('.menu-toggle');
-        const navLinks = document.querySelector('.nav-links');
         const mobileSidebar = document.querySelector('.mobile-sidebar');
         const sidebarClose = document.querySelector('.sidebar-close');
         const sidebarOverlay = document.querySelector('.sidebar-overlay');
-        const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+        const sidebarLinks = document.querySelectorAll('.sidebar-nav a, .sidebar-btn');
         const body = document.body;
         
-        if (!navToggle) {
-            console.error('Menu toggle not found!');
+        console.log('Navigation initialization started');
+        
+        if (!navToggle || !mobileSidebar) {
+            console.error('Mobile navigation elements not found:', { 
+                navToggle: !!navToggle, 
+                mobileSidebar: !!mobileSidebar 
+            });
             return;
         }
         
-        console.log('Navigation initialized with toggle button:', navToggle);
+        // Clear any existing event listeners to avoid duplicates
+        navToggle.outerHTML = navToggle.outerHTML;
+        sidebarClose.outerHTML = sidebarClose.outerHTML;
+        sidebarOverlay.outerHTML = sidebarOverlay.outerHTML;
+        
+        // Re-fetch elements after replacing
+        const newNavToggle = document.querySelector('.menu-toggle');
+        const newSidebarClose = document.querySelector('.sidebar-close');
+        const newSidebarOverlay = document.querySelector('.sidebar-overlay');
         
         // Add ARIA attributes for accessibility
-        navToggle.setAttribute('aria-expanded', 'false');
+        newNavToggle.setAttribute('aria-expanded', 'false');
+        mobileSidebar.setAttribute('aria-hidden', 'true');
         
-        // Toggle mobile sidebar
-        navToggle.addEventListener('click', function(e) {
+        // Add event listeners to new elements
+        
+        // Toggle mobile sidebar - this is the most critical part
+        newNavToggle.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('Menu toggle clicked');
-            toggleSidebar();
+            console.log('Menu toggle clicked!');
+            
+            // Simple toggle approach
+            const isOpen = mobileSidebar.classList.contains('active');
+            
+            if (isOpen) {
+                mobileSidebar.classList.remove('active');
+                newNavToggle.classList.remove('active');
+                newNavToggle.setAttribute('aria-expanded', 'false');
+                mobileSidebar.setAttribute('aria-hidden', 'true');
+                
+                if (newSidebarOverlay) {
+                    newSidebarOverlay.classList.remove('active');
+                }
+                
+                // Restore body scrolling
+                body.style.overflow = '';
+                body.classList.remove('nav-open');
+            } else {
+                mobileSidebar.classList.add('active');
+                newNavToggle.classList.add('active');
+                newNavToggle.setAttribute('aria-expanded', 'true');
+                mobileSidebar.setAttribute('aria-hidden', 'false');
+                
+                if (newSidebarOverlay) {
+                    newSidebarOverlay.classList.add('active');
+                }
+                
+                // Prevent body scrolling
+                body.style.overflow = 'hidden';
+                body.classList.add('nav-open');
+            }
         });
         
         // Close sidebar with close button
-        if (sidebarClose) {
-            sidebarClose.addEventListener('click', closeSidebar);
+        if (newSidebarClose) {
+            newSidebarClose.addEventListener('click', function() {
+                mobileSidebar.classList.remove('active');
+                newNavToggle.classList.remove('active');
+                newNavToggle.setAttribute('aria-expanded', 'false');
+                mobileSidebar.setAttribute('aria-hidden', 'true');
+                
+                if (newSidebarOverlay) {
+                    newSidebarOverlay.classList.remove('active');
+                }
+                
+                // Restore body scrolling
+                body.style.overflow = '';
+                body.classList.remove('nav-open');
+            });
         }
         
         // Close sidebar when clicking on overlay
-        if (sidebarOverlay) {
-            sidebarOverlay.addEventListener('click', closeSidebar);
+        if (newSidebarOverlay) {
+            newSidebarOverlay.addEventListener('click', function() {
+                mobileSidebar.classList.remove('active');
+                newNavToggle.classList.remove('active');
+                newNavToggle.setAttribute('aria-expanded', 'false');
+                mobileSidebar.setAttribute('aria-hidden', 'true');
+                
+                if (newSidebarOverlay) {
+                    newSidebarOverlay.classList.remove('active');
+                }
+                
+                // Restore body scrolling
+                body.style.overflow = '';
+                body.classList.remove('nav-open');
+            });
         }
         
-        // Close sidebar when clicking on links
+        // Handle sidebar link clicks
         if (sidebarLinks.length) {
             sidebarLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    // Add small delay to allow smooth scrolling to happen first
-                    setTimeout(closeSidebar, 100);
+                // Clear existing listeners by cloning
+                const newLink = link.cloneNode(true);
+                link.parentNode.replaceChild(newLink, link);
+                
+                // Add event listener to new element
+                newLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const href = this.getAttribute('href');
+                    console.log('Sidebar link clicked:', href);
+                    
+                    if (!href || href === '#') {
+                        // Just close the sidebar if no target
+                        mobileSidebar.classList.remove('active');
+                        newNavToggle.classList.remove('active');
+                        newNavToggle.setAttribute('aria-expanded', 'false');
+                        mobileSidebar.setAttribute('aria-hidden', 'true');
+                        
+                        if (newSidebarOverlay) {
+                            newSidebarOverlay.classList.remove('active');
+                        }
+                        
+                        // Restore body scrolling
+                        body.style.overflow = '';
+                        body.classList.remove('nav-open');
+                        return;
+                    }
+                    
+                    const targetId = href.substring(1);
+                    
+                    // First close the sidebar
+                    mobileSidebar.classList.remove('active');
+                    newNavToggle.classList.remove('active');
+                    newNavToggle.setAttribute('aria-expanded', 'false');
+                    mobileSidebar.setAttribute('aria-hidden', 'true');
+                    
+                    if (newSidebarOverlay) {
+                        newSidebarOverlay.classList.remove('active');
+                    }
+                    
+                    // Restore body scrolling
+                    body.style.overflow = '';
+                    body.classList.remove('nav-open');
+                    
+                    // Then scroll to the target after a slight delay
+                    // This ensures the sidebar is closed before scrolling
+                    setTimeout(function() {
+                        const scrollSuccessful = scrollToSection(targetId);
+                        
+                        if (scrollSuccessful) {
+                            // Update active state in navigation
+                            document.querySelectorAll('.sidebar-nav a').forEach(navLink => {
+                                navLink.classList.remove('active');
+                            });
+                            
+                            // Add active class to the clicked link if not booking button
+                            if (targetId !== 'booking') {
+                                const activeLink = document.querySelector(`.sidebar-nav a[href="#${targetId}"]`);
+                                if (activeLink) {
+                                    activeLink.classList.add('active');
+                                }
+                            }
+                        }
+                    }, 400); // Match to sidebar transition duration
                 });
             });
         }
@@ -147,129 +279,20 @@
         // Close sidebar when ESC key is pressed
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && mobileSidebar && mobileSidebar.classList.contains('active')) {
-                closeSidebar();
+                mobileSidebar.classList.remove('active');
+                newNavToggle.classList.remove('active');
+                newNavToggle.setAttribute('aria-expanded', 'false');
+                mobileSidebar.setAttribute('aria-hidden', 'true');
+                
+                if (newSidebarOverlay) {
+                    newSidebarOverlay.classList.remove('active');
+                }
+                
+                // Restore body scrolling
+                body.style.overflow = '';
+                body.classList.remove('nav-open');
             }
         });
-        
-        // Update active link in sidebar based on scroll position
-        window.addEventListener('scroll', updateActiveNavLink, { passive: true });
-        
-        // Track touch events for swipe to close
-        let touchStartX = 0;
-        let touchEndX = 0;
-        
-        if (mobileSidebar) {
-            mobileSidebar.addEventListener('touchstart', function(e) {
-                touchStartX = e.changedTouches[0].screenX;
-            }, { passive: true });
-            
-            mobileSidebar.addEventListener('touchend', function(e) {
-                touchEndX = e.changedTouches[0].screenX;
-                handleSwipe();
-            }, { passive: true });
-        }
-        
-        function handleSwipe() {
-            // Swipe right to close (since sidebar is on the right)
-            if (touchEndX > touchStartX + 50) {
-                closeSidebar();
-            }
-        }
-        
-        function toggleSidebar() {
-            if (mobileSidebar && mobileSidebar.classList.contains('active')) {
-                closeSidebar();
-            } else {
-                openSidebar();
-            }
-        }
-        
-        function openSidebar() {
-            console.log('Opening sidebar');
-            if (!mobileSidebar) return;
-            
-            // Update ARIA states
-            navToggle.classList.add('active');
-            navToggle.setAttribute('aria-expanded', 'true');
-            mobileSidebar.classList.add('active');
-            mobileSidebar.setAttribute('aria-hidden', 'false');
-            
-            // Show overlay
-            if (sidebarOverlay) {
-                sidebarOverlay.classList.add('active');
-            }
-            
-            // Prevent body scrolling
-            body.style.overflow = 'hidden';
-            body.classList.add('nav-open');
-            
-            // Set focus to first focusable element in sidebar
-            setTimeout(function() {
-                const firstFocusable = mobileSidebar.querySelector('a, button');
-                if (firstFocusable) {
-                    firstFocusable.focus();
-                }
-            }, 100);
-            
-            // Update active link
-            updateActiveNavLink();
-        }
-        
-        function closeSidebar() {
-            console.log('Closing sidebar');
-            if (!mobileSidebar) return;
-            
-            // Update ARIA states
-            navToggle.classList.remove('active');
-            navToggle.setAttribute('aria-expanded', 'false');
-            mobileSidebar.classList.remove('active');
-            mobileSidebar.setAttribute('aria-hidden', 'true');
-            
-            // Hide overlay
-            if (sidebarOverlay) {
-                sidebarOverlay.classList.remove('active');
-            }
-            
-            // Restore body scrolling
-            body.style.overflow = '';
-            body.classList.remove('nav-open');
-            
-            // Return focus to toggle button
-            setTimeout(function() {
-                navToggle.focus();
-            }, 100);
-        }
-        
-        function updateActiveNavLink() {
-            if (!sidebarLinks.length) return;
-            
-            // Get current scroll position
-            const scrollPosition = window.scrollY || document.documentElement.scrollTop;
-            
-            // Get all sections
-            const sections = Array.from(document.querySelectorAll('section[id]'));
-            
-            // Find current section
-            for (let i = sections.length - 1; i >= 0; i--) {
-                const section = sections[i];
-                const sectionTop = section.offsetTop - 100;
-                
-                if (scrollPosition >= sectionTop) {
-                    // Remove active class from all links
-                    sidebarLinks.forEach(link => {
-                        link.classList.remove('active');
-                    });
-                    
-                    // Add active class to current section link
-                    const currentLink = document.querySelector(`.sidebar-nav a[href="#${section.id}"]`);
-                    if (currentLink) {
-                        currentLink.classList.add('active');
-                    }
-                    
-                    break;
-                }
-            }
-        }
     }
     
     /**
@@ -287,48 +310,110 @@
         // Add scroll listener with passive flag for better performance
         window.addEventListener('scroll', updateBackToTopVisibility, {passive: true});
         
-        // Click handler
+        // Click handler with improved smooth scrolling
         backToTopButton.addEventListener('click', function(e) {
             e.preventDefault();
             
             // Get current scroll position
-            const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-            const scrollStep = Math.PI / (800 / 15); // Adjusted for smoother effect
-            const cosParameter = scrollY / 2;
-            let scrollCount = 0;
-            let scrollMargin;
+            const currentPosition = window.pageYOffset || document.documentElement.scrollTop;
             
-            // Use requestAnimationFrame for smooth animation
-            const scrollInterval = setInterval(function() {
-                // Stop when we reach top
-                if (window.pageYOffset <= 0) {
-                    clearInterval(scrollInterval);
-                    return;
-                }
+            // Calculate scroll duration based on current position - longer duration for scrolling from further down the page
+            // This creates a more natural feel as the page has more distance to cover
+            const baseDuration = 300; // minimum duration in ms
+            const scrollFactor = 0.15; // factor to add more time based on scroll position
+            const maxDuration = 1200; // cap the maximum duration
+            const calculatedDuration = Math.min(baseDuration + currentPosition * scrollFactor, maxDuration);
+            
+            // Add click animation
+            this.classList.add('clicked');
+            
+            // Add a visual indicator that scrolling is in progress
+            document.body.classList.add('smooth-scrolling');
+            
+            // Create smooth easing effect manually
+            const startTime = performance.now();
+            const duration = calculatedDuration;
+            
+            function scrollStep(timestamp) {
+                const elapsed = timestamp - startTime;
+                const progress = Math.min(elapsed / duration, 1);
                 
-                scrollCount += 1;
-                // Cosine-based easing function for extremely smooth deceleration
-                scrollMargin = cosParameter * Math.cos(scrollCount * scrollStep);
+                // Use easeOutQuint easing function for smoother deceleration
+                const easeOut = 1 - Math.pow(1 - progress, 5);
                 
-                // Only scroll if we're not at the top
-                if (window.pageYOffset > 0) {
-                    window.scrollTo(0, (scrollY - scrollMargin));
+                // Calculate the next scroll position
+                const scrollPosition = currentPosition - (currentPosition * easeOut);
+                
+                window.scrollTo(0, scrollPosition);
+                
+                if (progress < 1) {
+                    window.requestAnimationFrame(scrollStep);
                 } else {
-                    clearInterval(scrollInterval);
+                    // Ensure we're truly at the top when animation is complete
+                    window.scrollTo(0, 0);
+                    
+                    // Remove click animation after scrolling completes
+                    backToTopButton.classList.remove('clicked');
+                    document.body.classList.remove('smooth-scrolling');
+                    
+                    // Announce for screen readers
+                    announceToScreenReader('Returned to top of page');
                 }
-            }, 15); // 15ms for ~60fps
+            }
+            
+            window.requestAnimationFrame(scrollStep);
         });
         
         function updateBackToTopVisibility() {
             const scrollY = window.scrollY || window.pageYOffset;
             
             if (scrollY > showAt) {
-                backToTopButton.classList.add('visible');
+                if (!backToTopButton.classList.contains('visible')) {
+                    backToTopButton.classList.add('visible');
+                    
+                    // Add entrance animation class
+                    setTimeout(() => {
+                        backToTopButton.classList.add('active');
+                    }, 10);
+                }
             } else {
-                backToTopButton.classList.remove('visible');
-                backToTopButton.classList.remove('hiding');
+                if (backToTopButton.classList.contains('active')) {
+                    // Add exit animation
+                    backToTopButton.classList.remove('active');
+                    
+                    // Wait for exit animation to complete before hiding
+                    setTimeout(() => {
+                        backToTopButton.classList.remove('visible');
+                    }, 300);
+                }
             }
         }
+    }
+    
+    /**
+     * Helper function for screen reader announcements
+     */
+    function announceToScreenReader(message) {
+        const announcer = document.getElementById('sr-announcer') || document.createElement('div');
+        
+        if (!document.getElementById('sr-announcer')) {
+            announcer.id = 'sr-announcer';
+            announcer.setAttribute('aria-live', 'polite');
+            announcer.setAttribute('aria-atomic', 'true');
+            announcer.className = 'sr-only';
+            announcer.style.position = 'absolute';
+            announcer.style.width = '1px';
+            announcer.style.height = '1px';
+            announcer.style.overflow = 'hidden';
+            announcer.style.clip = 'rect(0, 0, 0, 0)';
+            document.body.appendChild(announcer);
+        }
+        
+        // Clear previous content and set new message
+        announcer.textContent = '';
+        setTimeout(() => {
+            announcer.textContent = message;
+        }, 50);
     }
     
     /**
@@ -490,6 +575,58 @@
         }
     }
     
+    /**
+     * Scroll to a section by ID with error handling
+     * @param {string} sectionId - The ID of the section to scroll to
+     */
+    function scrollToSection(sectionId) {
+        console.log('Scrolling to section:', sectionId);
+        
+        // Remove the # if it's included
+        if (sectionId.startsWith('#')) {
+            sectionId = sectionId.substring(1);
+        }
+        
+        // Get the target element
+        let targetElement = document.getElementById(sectionId);
+        
+        // If not found, try alternate methods
+        if (!targetElement) {
+            console.warn(`Section with ID "${sectionId}" not found, trying selector`);
+            targetElement = document.querySelector(`section[id="${sectionId}"]`);
+        }
+        
+        if (!targetElement) {
+            console.warn(`Section "${sectionId}" still not found, trying section with class`);
+            targetElement = document.querySelector(`section.${sectionId}`);
+        }
+        
+        if (targetElement) {
+            // Calculate position with offset for the header
+            const headerOffset = 70;
+            const elementPosition = targetElement.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            
+            console.log(`Scrolling to section "${sectionId}" at position:`, offsetPosition);
+            
+            // Scroll to the target section
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+            
+            // Update URL
+            if (history.pushState) {
+                history.pushState(null, null, `#${sectionId}`);
+            }
+            
+            return true;
+        } else {
+            console.error(`Section "${sectionId}" not found on page`);
+            return false;
+        }
+    }
+    
     // Execute when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', onDOMReady);
@@ -501,6 +638,81 @@
     // Check if all required scripts are loaded properly
     window.addEventListener('load', function() {
         console.log('Page fully loaded');
+        
+        // Verify section IDs exist and are properly formatted
+        console.log('Verifying section IDs...');
+        const sectionIds = ['home', 'services', 'gallery', 'testimonials', 'contact', 'booking'];
+        const missingIds = [];
+        
+        sectionIds.forEach(id => {
+            const section = document.getElementById(id);
+            if (!section) {
+                console.warn(`Section with ID "${id}" not found!`);
+                missingIds.push(id);
+            } else {
+                console.log(`Section "${id}" found at position:`, section.offsetTop);
+            }
+        });
+        
+        if (missingIds.length > 0) {
+            console.error('Missing section IDs:', missingIds);
+        } else {
+            console.log('All section IDs found correctly');
+        }
+        
+        // Verify mobile menu functionality
+        const navToggle = document.querySelector('.menu-toggle');
+        const mobileSidebar = document.querySelector('.mobile-sidebar');
+        
+        console.log('Mobile menu elements check:', {
+            navToggle: !!navToggle,
+            mobileSidebar: !!mobileSidebar 
+        });
+        
+        // Ensure event listeners are attached
+        if (navToggle && !navToggle._hasClickListener) {
+            console.log('Re-attaching mobile menu click handler');
+            
+            // Clear existing listeners
+            const newNavToggle = navToggle.cloneNode(true);
+            navToggle.parentNode.replaceChild(newNavToggle, navToggle);
+            
+            newNavToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Menu toggle clicked (from load handler)');
+                
+                if (mobileSidebar) {
+                    const isOpen = mobileSidebar.classList.contains('active');
+                    
+                    if (isOpen) {
+                        // Close sidebar
+                        mobileSidebar.classList.remove('active');
+                        newNavToggle.classList.remove('active');
+                        
+                        const sidebarOverlay = document.querySelector('.sidebar-overlay');
+                        if (sidebarOverlay) {
+                            sidebarOverlay.classList.remove('active');
+                        }
+                        
+                        document.body.style.overflow = '';
+                        document.body.classList.remove('nav-open');
+                    } else {
+                        // Open sidebar
+                        mobileSidebar.classList.add('active');
+                        newNavToggle.classList.add('active');
+                        
+                        const sidebarOverlay = document.querySelector('.sidebar-overlay');
+                        if (sidebarOverlay) {
+                            sidebarOverlay.classList.add('active');
+                        }
+                        
+                        document.body.style.overflow = 'hidden';
+                        document.body.classList.add('nav-open');
+                    }
+                }
+            });
+            newNavToggle._hasClickListener = true;
+        }
         
         // Reinitialize gallery if needed
         if (document.querySelector('.gallery-filter') && typeof initGalleryFunctionality === 'function') {
