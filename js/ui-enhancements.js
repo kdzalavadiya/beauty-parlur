@@ -4,14 +4,32 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all enhancements
+    // Detect if touch device
+    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
+    
+    // Add class to html element for CSS targeting
+    if (isTouchDevice) {
+        document.documentElement.classList.add('touch-device');
+    } else {
+        document.documentElement.classList.add('no-touch');
+    }
+    
+    // Initialize all enhancements with appropriate optimizations for device type
     initSmoothScrolling();
     initMicroInteractions();
-    initHoverEffects();
+    
+    // Only use hover effects on non-touch devices for better performance
+    if (!isTouchDevice) {
+        initHoverEffects();
+    }
+    
     initContentRevealAnimations();
     initStickyHeader();
     initTimelineAnimations();
     initLazyLoading();
+    
+    // Enable responsive navigation
+    initResponsiveNav();
 
     // Show body after initializing (prevents FOUC)
     document.body.classList.add('loaded');
@@ -295,5 +313,80 @@ function initLazyLoading() {
     // Enable CSS for non-JS users
     document.querySelectorAll('link[rel="stylesheet"][media="print"]').forEach(link => {
         link.media = 'all';
+    });
+}
+
+/**
+ * Responsive navigation implementation
+ */
+function initResponsiveNav() {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.mobile-sidebar');
+    const sidebarOverlay = document.querySelector('.sidebar-overlay');
+    const sidebarClose = document.querySelector('.sidebar-close');
+    const navLinks = document.querySelectorAll('.mobile-sidebar a');
+
+    if (!menuToggle || !sidebar) return;
+    
+    // Toggle mobile menu
+    menuToggle.addEventListener('click', function() {
+        sidebar.classList.add('active');
+        document.body.classList.add('no-scroll');
+        if (sidebarOverlay) {
+            sidebarOverlay.classList.add('active');
+        }
+        
+        // Set expanded state for accessibility
+        this.setAttribute('aria-expanded', 'true');
+        sidebar.setAttribute('aria-hidden', 'false');
+    });
+    
+    // Close mobile menu functions
+    function closeMobileMenu() {
+        sidebar.classList.remove('active');
+        document.body.classList.remove('no-scroll');
+        if (sidebarOverlay) {
+            sidebarOverlay.classList.remove('active');
+        }
+        
+        // Reset accessibility attributes
+        if (menuToggle) {
+            menuToggle.setAttribute('aria-expanded', 'false');
+        }
+        sidebar.setAttribute('aria-hidden', 'true');
+    }
+    
+    // Close button event
+    if (sidebarClose) {
+        sidebarClose.addEventListener('click', closeMobileMenu);
+    }
+    
+    // Close on overlay click
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', closeMobileMenu);
+    }
+    
+    // Close on nav link click for mobile
+    navLinks.forEach(link => {
+        link.addEventListener('click', closeMobileMenu);
+    });
+    
+    // Close on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sidebar.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+    
+    // Handle resize - close mobile menu if viewport changes to desktop
+    let windowWidth = window.innerWidth;
+    window.addEventListener('resize', function() {
+        if (window.innerWidth !== windowWidth) {
+            windowWidth = window.innerWidth;
+            
+            if (windowWidth > 768 && sidebar.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        }
     });
 } 

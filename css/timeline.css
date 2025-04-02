@@ -249,6 +249,10 @@
 
 /* Responsive adjustments */
 @media screen and (max-width: 768px) {
+    .timeline-section {
+        padding: 60px 0;
+    }
+    
     .timeline::before {
         left: 30px;
     }
@@ -268,6 +272,7 @@
         margin-left: 60px !important;
         margin-right: 0 !important;
         text-align: left !important;
+        padding: 20px;
     }
     
     .timeline-item:nth-child(odd) .timeline-content::after,
@@ -279,6 +284,79 @@
     .timeline-item:nth-child(even) .timeline-icon {
         left: 10px;
         right: auto;
+    }
+    
+    .timeline-title {
+        font-size: 18px;
+    }
+    
+    .timeline-text {
+        font-size: 14px;
+    }
+    
+    .timeline-date {
+        font-size: 12px;
+        padding: 4px 12px;
+    }
+    
+    .timeline-image {
+        margin: 10px 0;
+    }
+    
+    .timeline-cta {
+        padding: 20px 15px;
+    }
+    
+    .timeline-cta p {
+        font-size: 16px;
+    }
+}
+
+/* Small mobile adjustment */
+@media screen and (max-width: 480px) {
+    .timeline-section {
+        padding: 40px 0;
+    }
+    
+    .timeline::before {
+        left: 20px;
+    }
+    
+    .timeline-item::before {
+        left: 20px;
+        width: 16px;
+        height: 16px;
+    }
+    
+    .timeline-content {
+        width: calc(100% - 60px);
+        margin-left: 40px !important;
+        padding: 15px;
+    }
+    
+    .timeline-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+        left: 4px !important;
+    }
+    
+    .timeline-title {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    
+    .timeline-date {
+        margin-bottom: 5px;
+    }
+    
+    .timeline-image {
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .timeline-cta .btn {
+        padding: 10px 20px;
+        font-size: 14px;
     }
 }
 

@@ -345,4 +345,93 @@
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
     }
+}
+
+/* Mobile Responsiveness Improvements */
+@media screen and (max-width: 768px) {
+    /* Reduce animation durations for better performance */
+    .fade-in, .fade-in-up, .fade-in-right {
+        animation-duration: 0.5s;
+    }
+    
+    /* Adjust sticky header for mobile */
+    .nav-sticky {
+        padding: 8px 0;
+    }
+    
+    /* Disable tilt effect on mobile for better performance */
+    .service-card {
+        transform: none !important;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-5px) !important;
+    }
+    
+    /* Ensure buttons have enough touch target size */
+    .btn {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 20px;
+    }
+    
+    /* Fix ripple effect positioning on mobile */
+    .ripple {
+        transform-origin: center;
+    }
+}
+
+/* Small mobile devices */
+@media screen and (max-width: 480px) {
+    /* Reduce section paddings */
+    section {
+        padding: 40px 0;
+    }
+    
+    /* Ensure text readability */
+    p {
+        font-size: 14px;
+    }
+    
+    h2 {
+        font-size: 24px;
+    }
+    
+    h3 {
+        font-size: 18px;
+    }
+    
+    /* Adjust buttons for smaller screens */
+    .btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+    
+    /* Reduce animation complexity */
+    .pulse-effect {
+        animation: none;
+    }
+    
+    .pulse-effect:hover {
+        transform: scale(1.05);
+        transition: transform 0.3s ease;
+    }
+}
+
+/* Support for reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .service-card, .timeline-item, .gallery-item {
+        transform: none !important;
+        transition: none !important;
+    }
 } 
