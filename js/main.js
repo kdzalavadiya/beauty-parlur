@@ -13,6 +13,8 @@
         initSmoothScroll();
         initLazyLoading();
         initAccessibility();
+        initTestimonialSlider();
+        initBookingForm();
         
         // Setup performance monitoring
         if ('performance' in window && 'mark' in window.performance) {
@@ -116,24 +118,36 @@
             return;
         }
         
-        // Clear any existing event listeners to avoid duplicates
-        navToggle.outerHTML = navToggle.outerHTML;
-        sidebarClose.outerHTML = sidebarClose.outerHTML;
-        sidebarOverlay.outerHTML = sidebarOverlay.outerHTML;
+        // Function to close the sidebar
+        function closeSidebar() {
+            mobileSidebar.classList.remove('active');
+            if (navToggle) navToggle.classList.remove('active');
+            navToggle.setAttribute('aria-expanded', 'false');
+            mobileSidebar.setAttribute('aria-hidden', 'true');
+            
+            if (sidebarOverlay) {
+                sidebarOverlay.classList.remove('active');
+            }
+            
+            // Restore body scrolling
+            body.style.overflow = '';
+            body.classList.remove('nav-open');
+        }
         
-        // Re-fetch elements after replacing
-        const newNavToggle = document.querySelector('.menu-toggle');
-        const newSidebarClose = document.querySelector('.sidebar-close');
-        const newSidebarOverlay = document.querySelector('.sidebar-overlay');
+        // Function to open the sidebar
+        function openSidebar() {
+            mobileSidebar.classList.add('active');
+            navToggle.classList.add('active');
+            navToggle.setAttribute('aria-expanded', 'true');
+            mobileSidebar.setAttribute('aria-hidden', 'false');
+            
+            if (sidebarOverlay) {
+                sidebarOverlay.classList.add('active');
+            }
+        }
         
-        // Add ARIA attributes for accessibility
-        newNavToggle.setAttribute('aria-expanded', 'false');
-        mobileSidebar.setAttribute('aria-hidden', 'true');
-        
-        // Add event listeners to new elements
-        
-        // Toggle mobile sidebar - this is the most critical part
-        newNavToggle.addEventListener('click', function(e) {
+        // Toggle mobile sidebar
+        navToggle.addEventListener('click', function(e) {
             e.preventDefault();
             console.log('Menu toggle clicked!');
             
@@ -141,79 +155,32 @@
             const isOpen = mobileSidebar.classList.contains('active');
             
             if (isOpen) {
-                mobileSidebar.classList.remove('active');
-                newNavToggle.classList.remove('active');
-                newNavToggle.setAttribute('aria-expanded', 'false');
-                mobileSidebar.setAttribute('aria-hidden', 'true');
-                
-                if (newSidebarOverlay) {
-                    newSidebarOverlay.classList.remove('active');
-                }
-                
-                // Restore body scrolling
-                body.style.overflow = '';
-                body.classList.remove('nav-open');
+                closeSidebar();
             } else {
-                mobileSidebar.classList.add('active');
-                newNavToggle.classList.add('active');
-                newNavToggle.setAttribute('aria-expanded', 'true');
-                mobileSidebar.setAttribute('aria-hidden', 'false');
-                
-                if (newSidebarOverlay) {
-                    newSidebarOverlay.classList.add('active');
-                }
-                
-                // Prevent body scrolling
-                body.style.overflow = 'hidden';
-                body.classList.add('nav-open');
+                openSidebar();
             }
         });
         
         // Close sidebar with close button
-        if (newSidebarClose) {
-            newSidebarClose.addEventListener('click', function() {
-                mobileSidebar.classList.remove('active');
-                newNavToggle.classList.remove('active');
-                newNavToggle.setAttribute('aria-expanded', 'false');
-                mobileSidebar.setAttribute('aria-hidden', 'true');
-                
-                if (newSidebarOverlay) {
-                    newSidebarOverlay.classList.remove('active');
-                }
-                
-                // Restore body scrolling
-                body.style.overflow = '';
-                body.classList.remove('nav-open');
+        if (sidebarClose) {
+            sidebarClose.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeSidebar();
             });
         }
         
         // Close sidebar when clicking on overlay
-        if (newSidebarOverlay) {
-            newSidebarOverlay.addEventListener('click', function() {
-                mobileSidebar.classList.remove('active');
-                newNavToggle.classList.remove('active');
-                newNavToggle.setAttribute('aria-expanded', 'false');
-                mobileSidebar.setAttribute('aria-hidden', 'true');
-                
-                if (newSidebarOverlay) {
-                    newSidebarOverlay.classList.remove('active');
-                }
-                
-                // Restore body scrolling
-                body.style.overflow = '';
-                body.classList.remove('nav-open');
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeSidebar();
             });
         }
         
         // Handle sidebar link clicks
         if (sidebarLinks.length) {
             sidebarLinks.forEach(link => {
-                // Clear existing listeners by cloning
-                const newLink = link.cloneNode(true);
-                link.parentNode.replaceChild(newLink, link);
-                
-                // Add event listener to new element
-                newLink.addEventListener('click', function(e) {
+                link.addEventListener('click', function(e) {
                     e.preventDefault();
                     
                     const href = this.getAttribute('href');
@@ -221,67 +188,42 @@
                     
                     if (!href || href === '#') {
                         // Just close the sidebar if no target
-                        mobileSidebar.classList.remove('active');
-                        newNavToggle.classList.remove('active');
-                        newNavToggle.setAttribute('aria-expanded', 'false');
-                        mobileSidebar.setAttribute('aria-hidden', 'true');
-                        
-                        if (newSidebarOverlay) {
-                            newSidebarOverlay.classList.remove('active');
-                        }
-                        
-                        // Restore body scrolling
-                        body.style.overflow = '';
-                        body.classList.remove('nav-open');
+                        closeSidebar();
                         return;
                     }
                     
                     const targetId = href.substring(1);
+                    const targetElement = document.getElementById(targetId);
                     
                     // First close the sidebar
-                    mobileSidebar.classList.remove('active');
-                    newNavToggle.classList.remove('active');
-                    newNavToggle.setAttribute('aria-expanded', 'false');
-                    mobileSidebar.setAttribute('aria-hidden', 'true');
+                    closeSidebar();
                     
-                    if (newSidebarOverlay) {
-                        newSidebarOverlay.classList.remove('active');
-                    }
-                    
-                    // Then scroll to the target section
-                    const targetSection = document.getElementById(targetId);
-                    if (targetSection) {
-                        // Use smooth scrolling if supported
-                        if ('scrollBehavior' in document.documentElement.style) {
-                            targetSection.scrollIntoView({ behavior: 'smooth' });
+                    // Then scroll to the target after a small delay
+                    setTimeout(() => {
+                        if (targetElement) {
+                            targetElement.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
                         } else {
-                            // Fallback for browsers that don't support smooth scrolling
-                            targetSection.scrollIntoView();
+                            window.location.href = href;
                         }
-                    }
-                    
-                    // Restore body scrolling
-                    body.style.overflow = '';
-                    body.classList.remove('nav-open');
+                    }, 300);
                 });
             });
         }
         
-        // Close menu on Escape key
+        // Handle window resize to properly reset state on desktop
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768 && mobileSidebar.classList.contains('active')) {
+                closeSidebar();
+            }
+        });
+        
+        // Add keyboard support for closing sidebar with Escape key
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && mobileSidebar && mobileSidebar.classList.contains('active')) {
-                mobileSidebar.classList.remove('active');
-                newNavToggle.classList.remove('active');
-                newNavToggle.setAttribute('aria-expanded', 'false');
-                mobileSidebar.setAttribute('aria-hidden', 'true');
-                
-                if (newSidebarOverlay) {
-                    newSidebarOverlay.classList.remove('active');
-                }
-                
-                // Restore body scrolling
-                body.style.overflow = '';
-                body.classList.remove('nav-open');
+            if (e.key === 'Escape' && mobileSidebar.classList.contains('active')) {
+                closeSidebar();
             }
         });
     }
@@ -305,9 +247,13 @@
             // Show the button after scrolling down 300px
             if (window.scrollY > 300) {
                 if (!newButton.classList.contains('visible')) {
-                    newButton.classList.add('visible');
+                    newButton.style.display = 'flex'; // Make sure to reset display property
+                    // Small delay to allow display to take effect before opacity transition
+                    setTimeout(() => {
+                        newButton.classList.add('visible');
+                    }, 10);
                 }
-                } else {
+            } else {
                 newButton.classList.remove('visible');
             }
             
@@ -332,13 +278,37 @@
         
         // Scroll to top on click
         newButton.addEventListener('click', function() {
-            if ('scrollBehavior' in document.documentElement.style) {
-                // Native smooth scrolling
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else {
-                // Fallback for browsers that don't support smooth scrolling
-                window.scrollTo(0, 0);
+            // Add animation class to button
+            newButton.classList.add('clicked');
+            
+            // Smooth scroll implementation
+            const duration = 800; // ms - longer duration for smoother effect
+            const startPosition = window.pageYOffset;
+            const startTime = performance.now();
+            
+            // Use requestAnimationFrame for smoother animation
+            function scrollAnimation(currentTime) {
+                const timeElapsed = currentTime - startTime;
+                const progress = Math.min(timeElapsed / duration, 1);
+                
+                // Easing function: easeOutCubic for smooth deceleration
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                
+                window.scrollTo(0, startPosition * (1 - easeProgress));
+                
+                // Continue animation until we reach the top
+                if (progress < 1) {
+                    requestAnimationFrame(scrollAnimation);
+                } else {
+                    // Reset button styling when animation is complete
+                    setTimeout(() => {
+                        newButton.classList.remove('clicked');
+                    }, 300);
+                }
             }
+            
+            // Start the animation
+            requestAnimationFrame(scrollAnimation);
         });
         
         // Ensure button is visible when needed
@@ -522,10 +492,11 @@
         }
     }
     
-    // Execute when DOM is ready
+    // Call onDOMReady when the DOM is fully loaded
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', onDOMReady);
     } else {
+        // DOM already loaded, call immediately
         onDOMReady();
     }
     
@@ -546,7 +517,7 @@
         initModals();
         
         // Make sure navigation is working correctly
-        addRedundantNavListeners();
+        // addRedundantNavListeners(); // Removed - Functionality seems redundant/incomplete
     });
     
     /**
@@ -585,7 +556,8 @@
         // Close modal when clicking outside content
         modals.forEach(modal => {
             modal.addEventListener('click', function(e) {
-                if (e.target === this) {
+                // Ensure the click is directly on the modal overlay, not content
+                if (e.target === this && modal) { 
                     closeModal(this);
                 }
             });
@@ -594,18 +566,18 @@
         // Close modal with Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                modals.forEach(modal => {
-                    if (modal.classList.contains('active')) {
-                        closeModal(modal);
-                    }
-                });
+                // Find the currently active modal, if any
+                const activeModal = document.querySelector('.modal.active');
+                if (activeModal) {
+                    closeModal(activeModal);
+                }
             }
         });
         
         // Functions to open and close modals
         function openModal(modal) {
+            if (!modal) return; // Add null check
             modal.classList.add('active');
-            document.body.classList.add('modal-open');
             
             // Focus the first focusable element in the modal
             const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
@@ -615,24 +587,211 @@
         }
         
         function closeModal(modal) {
+            if (!modal) return; // Add null check
             modal.classList.remove('active');
-            document.body.classList.remove('modal-open');
         }
     }
     
     /**
-     * Add redundant navigation listeners for better reliability
+     * Testimonial Slider
+     * Shows one testimonial at a time with controls
      */
-    function addRedundantNavListeners() {
-        const isOpen = mobileSidebar.classList.contains('active');
-        console.log('Adding redundant navigation listeners, sidebar open:', isOpen);
+    function initTestimonialSlider() {
+        const slider = document.querySelector('.testimonials-slider');
+        if (!slider) return;
+
+        const slides = slider.querySelectorAll('.testimonial-slide');
+        const prevButton = document.querySelector('.testimonial-prev');
+        const nextButton = document.querySelector('.testimonial-next');
+        const dotsContainer = document.querySelector('.testimonial-dots');
+        
+        let currentIndex = 0;
+        const totalSlides = slides.length;
+        
+        // Create dots
+        slides.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.classList.add('testimonial-dot');
+            if (index === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => goToSlide(index));
+            dotsContainer.appendChild(dot);
+        });
+        
+        const dots = dotsContainer.querySelectorAll('.testimonial-dot');
+        
+        // Initialize the first slide
+        updateSlides();
+        
+        // Add click event to navigation buttons
+        if (prevButton) {
+            prevButton.addEventListener('click', () => {
+                currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+                updateSlides();
+            });
+        }
+        
+        if (nextButton) {
+            nextButton.addEventListener('click', () => {
+                currentIndex = (currentIndex + 1) % totalSlides;
+                updateSlides();
+            });
+        }
+        
+        // Add touch swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        slider.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        
+        slider.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchEndX - touchStartX > swipeThreshold) {
+                // Swipe right, go to previous
+                currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+                updateSlides();
+            } else if (touchStartX - touchEndX > swipeThreshold) {
+                // Swipe left, go to next
+                currentIndex = (currentIndex + 1) % totalSlides;
+                updateSlides();
+            }
+        }
+        
+        // Function to go to a specific slide
+        function goToSlide(index) {
+            currentIndex = index;
+            updateSlides();
+        }
+        
+        // Update the slide classes based on current index
+        function updateSlides() {
+            slides.forEach((slide, index) => {
+                // First remove all classes
+                slide.classList.remove('active', 'prev');
+                
+                // Add appropriate class based on index
+                if (index === currentIndex) {
+                    slide.classList.add('active');
+                } else if (index === ((currentIndex - 1 + totalSlides) % totalSlides)) {
+                    slide.classList.add('prev');
+                }
+            });
+            
+            // Update dots
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentIndex);
+            });
+        }
+        
+        // Auto play slides
+        let autoPlayInterval;
+        
+        function startAutoPlay() {
+            autoPlayInterval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % totalSlides;
+                updateSlides();
+            }, 5000); // Change slide every 5 seconds
+        }
+        
+        function stopAutoPlay() {
+            clearInterval(autoPlayInterval);
+        }
+        
+        // Start auto play by default
+        startAutoPlay();
+        
+        // Pause on hover
+        slider.addEventListener('mouseenter', stopAutoPlay);
+        slider.addEventListener('mouseleave', startAutoPlay);
+        
+        // Pause on touch
+        slider.addEventListener('touchstart', stopAutoPlay, { passive: true });
+        slider.addEventListener('touchend', startAutoPlay, { passive: true });
     }
 
     /**
-     * Helper function to safely get elements
+     * Initialize Booking Form Toggle and Carousel
      */
-    function getElement(selector) {
-        return document.querySelector(selector);
+    function initBookingForm() {
+        const bookNowBtn = document.querySelector('.btn-book-now');
+        const bookingFormContainer = document.querySelector('.booking-form-container');
+        const closeFormBtn = document.querySelector('.close-form-btn');
+
+        // Add checks to ensure elements exist
+        if (!bookNowBtn || !bookingFormContainer || !closeFormBtn) {
+            return;
+        }
+
+        bookNowBtn.addEventListener('click', function() {
+            bookingFormContainer.classList.toggle('active'); 
+        });
+        
+        closeFormBtn.addEventListener('click', function() {
+            bookingFormContainer.classList.remove('active');
+        });
+        
+        // --- Image carousel functionality --- 
+        const carouselImages = document.querySelectorAll('.booking-img');
+        const indicators = document.querySelectorAll('.indicator');
+        let currentIndex = 0;
+        
+        function showSlide(index) {
+            if (!carouselImages.length || !indicators.length) return;
+            carouselImages.forEach(img => img.classList.remove('active'));
+            indicators.forEach(dot => dot.classList.remove('active'));
+            if (carouselImages[index]) carouselImages[index].classList.add('active');
+            if (indicators[index]) indicators[index].classList.add('active');
+            currentIndex = index;
+        }
+        
+        if (carouselImages.length) {
+            showSlide(0);
+        }
+        
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => { showSlide(index); });
+        });
+        
+        if (carouselImages.length > 1) {
+            setInterval(() => {
+                let nextIndex = (currentIndex + 1) % carouselImages.length;
+                showSlide(nextIndex);
+            }, 5000);
+        }
+        
+        // --- Handle form submission --- 
+        const bookingForm = document.getElementById('booking-form');
+        if (bookingForm) {
+            bookingForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const submitBtn = bookingForm.querySelector('.form-btn');
+                const formInputs = bookingForm.querySelectorAll('.form-control');
+                
+                if(submitBtn) {
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                    submitBtn.disabled = true;
+                }
+                formInputs.forEach(input => { input.disabled = true; });
+                
+                setTimeout(() => {
+                    if (bookingFormContainer) {
+                        bookingFormContainer.innerHTML = `
+                            <div class="form-success-message">
+                                <i class="fas fa-check-circle"></i>
+                                <h4>Booking Confirmed!</h4>
+                                <p>Thank you for booking with us. We'll contact you shortly...</p>
+                                <button class="btn-book-now" onclick="location.reload()">Back Home</button>
+                            </div>
+                        `;
+                    }
+                }, 2000);
+            });
+        }
     }
-    
 })(); 
