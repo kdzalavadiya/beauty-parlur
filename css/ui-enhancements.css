@@ -1,0 +1,348 @@
+/**
+ * UI Enhancements CSS
+ * Advanced styling and animations for the New Real Bridal website
+ */
+
+/* ===== Sticky Header Styles ===== */
+.nav-sticky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.nav-hidden {
+    transform: translateY(-100%);
+}
+
+.nav-visible {
+    transform: translateY(0);
+}
+
+/* Add glass effect to sticky header */
+@supports (backdrop-filter: blur(10px)) {
+    .nav-sticky {
+        background-color: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+    }
+}
+
+/* ===== Button Effects ===== */
+/* Pulse effect for CTA buttons */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 4px 12px rgba(241, 120, 182, 0.2);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 6px 18px rgba(241, 120, 182, 0.3);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 4px 12px rgba(241, 120, 182, 0.2);
+    }
+}
+
+.pulse-effect {
+    animation: pulse 0.6s ease-in-out;
+}
+
+/* Ripple effect for buttons */
+.btn, .card-btn, button {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0);
+    animation: ripple 0.6s linear;
+}
+
+.ripple-effect {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.4);
+    width: 100px;
+    height: 100px;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0);
+    animation: ripple 0.6s linear;
+}
+
+@keyframes ripple {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(3);
+    }
+}
+
+/* ===== Content Reveal Animations ===== */
+/* Fade-in-up animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.8s ease forwards;
+}
+
+/* Fade-in-right animation */
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.fade-in-right {
+    animation: fadeInRight 0.8s ease forwards;
+}
+
+/* ===== Service Cards Enhancement ===== */
+.card {
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    will-change: transform;
+}
+
+.card:hover {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.card-content {
+    transition: transform 0.3s ease;
+}
+
+.card:hover .card-content {
+    transform: translateY(-5px);
+}
+
+.card-img {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-img img {
+    transition: transform 0.5s ease;
+}
+
+.card:hover .card-img img {
+    transform: scale(1.05);
+}
+
+/* ===== Gallery Enhancements ===== */
+.gallery-item {
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Add subtle border and shadow to gallery items */
+.gallery-item {
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* ===== Testimonial Enhancements ===== */
+.testimonial-item {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    will-change: transform;
+}
+
+.testimonial-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Add subtle gradient background to testimonials */
+.testimonial-item {
+    background: linear-gradient(to bottom right, rgba(255, 255, 255, 1), rgba(250, 240, 245, 0.8));
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.testimonial-author {
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.testimonial-item:hover .testimonial-author {
+    transform: scale(1.05);
+}
+
+/* ===== Form Enhancement ===== */
+.form-control {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.form-control:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(241, 120, 182, 0.15);
+}
+
+/* Add floating label effect */
+.form-group {
+    position: relative;
+}
+
+/* ===== Section Titles Enhancement ===== */
+.section-title h2 {
+    position: relative;
+    display: inline-block;
+}
+
+.section-title h2:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(to right, #F178B6, #8A2BE2);
+    transition: width 0.3s ease;
+}
+
+.section-title:hover h2:after {
+    width: 100%;
+}
+
+/* ===== Hero Section Enhancement ===== */
+.hero {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0) 0%, rgba(241, 120, 182, 0.15) 100%);
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-title {
+    position: relative;
+    display: inline-block;
+}
+
+.hero-title:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(to right, #F178B6, #8A2BE2);
+    transition: width 0.6s ease;
+}
+
+.hero:hover .hero-title:after {
+    width: 100%;
+}
+
+/* ===== Back to Top Button Enhancement ===== */
+.back-to-top {
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.back-to-top:hover {
+    transform: translateY(-5px);
+    background-color: #e0609d;
+}
+
+/* Add cool pulse effect */
+@keyframes pulse-border {
+    0% {
+        box-shadow: 0 0 0 0 rgba(241, 120, 182, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(241, 120, 182, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(241, 120, 182, 0);
+    }
+}
+
+.back-to-top {
+    animation: pulse-border 2s infinite;
+}
+
+/* ===== Mobile Enhancements ===== */
+@media (max-width: 768px) {
+    .nav-sticky {
+        background-color: rgba(255, 255, 255, 0.98);
+    }
+    
+    .card:hover {
+        transform: none !important;
+    }
+    
+    /* Disable certain effects on mobile */
+    .section-title h2:after {
+        transition: none;
+    }
+    
+    /* Optimize animations for mobile */
+    .fade-in-up, .fade-in-right, .fade-in {
+        animation-duration: 0.5s;
+    }
+}
+
+/* ===== Prefers-reduced-motion ===== */
+@media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+} 

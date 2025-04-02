@@ -285,4 +285,266 @@ function debounce(func, wait = 100) {
 window.RealBridal = window.RealBridal || {};
 window.RealBridal.utils = {
     debounce: debounce
-}; 
+};
+
+/**
+ * Core JavaScript functionality for New Real Bridal Studio website
+ * Handles browser compatibility, performance monitoring, and core utilities
+ */
+
+(function() {
+    // Browser compatibility checks and feature detection
+    const browserSupport = {
+        // Check browser features
+        init: function() {
+            this.checkBrowserSupport();
+            this.applyCompatibilityFixes();
+            this.notifyUserOfCompatibilityIssues();
+        },
+        
+        // Feature detection
+        features: {
+            flexbox: typeof document.documentElement.style.flexBasis !== 'undefined',
+            grid: typeof document.documentElement.style.grid !== 'undefined',
+            webp: false, // Will be set by checkWebpSupport()
+            webgl: false, // Will be set by checkWebGL()
+            backdrop: typeof document.documentElement.style.backdropFilter !== 'undefined',
+            speechRecognition: ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window),
+            touchEvents: ('ontouchstart' in window) || (navigator.maxTouchPoints > 0),
+            passiveEvents: false, // Will be set by checkPassiveEvents()
+            intersectionObserver: 'IntersectionObserver' in window,
+            localStorage: false, // Will be set by checkLocalStorage()
+            es6: false // Will be set by checkES6Support()
+        },
+        
+        // Browser detection
+        browser: {
+            name: 'unknown',
+            version: 0,
+            isIE: false,
+            isEdge: false,
+            isFirefox: false,
+            isChrome: false,
+            isSafari: false,
+            isOpera: false,
+            isMobile: false,
+            isOldBrowser: false
+        },
+        
+        checkBrowserSupport: function() {
+            console.log('Checking browser compatibility...');
+            
+            // Detect browser
+            this.detectBrowser();
+            
+            // Check for WebP support
+            this.checkWebpSupport();
+            
+            // Check for WebGL
+            this.checkWebGL();
+            
+            // Check for passive events support
+            this.checkPassiveEvents();
+            
+            // Check localStorage support
+            this.checkLocalStorage();
+            
+            // Check ES6 support
+            this.checkES6Support();
+            
+            // Log results
+            console.log('Browser support check completed:', this.features);
+            console.log('Browser info:', this.browser);
+        },
+        
+        detectBrowser: function() {
+            const ua = navigator.userAgent;
+            this.browser.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+            
+            // Detect browser name and version
+            if (ua.indexOf('MSIE ') > 0 || ua.indexOf('Trident/') > 0) {
+                this.browser.isIE = true;
+                this.browser.name = 'Internet Explorer';
+                this.browser.isOldBrowser = true;
+            } else if (ua.indexOf('Edge/') > 0) {
+                this.browser.isEdge = true;
+                this.browser.name = 'Edge Legacy';
+            } else if (ua.indexOf('Edg/') > 0) {
+                this.browser.isEdge = true;
+                this.browser.name = 'Edge (Chromium)';
+            } else if (ua.indexOf('Firefox/') > 0) {
+                this.browser.isFirefox = true;
+                this.browser.name = 'Firefox';
+            } else if (ua.indexOf('Chrome/') > 0) {
+                this.browser.isChrome = true;
+                this.browser.name = 'Chrome';
+            } else if (ua.indexOf('Safari/') > 0 && ua.indexOf('Chrome/') === -1) {
+                this.browser.isSafari = true;
+                this.browser.name = 'Safari';
+            } else if (ua.indexOf('OPR/') > 0 || ua.indexOf('Opera/') > 0) {
+                this.browser.isOpera = true;
+                this.browser.name = 'Opera';
+            }
+            
+            // Check for old versions
+            if (
+                (this.browser.isChrome && parseInt(ua.match(/Chrome\/(\d+)/)[1], 10) < 70) ||
+                (this.browser.isFirefox && parseInt(ua.match(/Firefox\/(\d+)/)[1], 10) < 60) ||
+                (this.browser.isSafari && parseInt(ua.match(/Version\/(\d+)/)[1], 10) < 12)
+            ) {
+                this.browser.isOldBrowser = true;
+            }
+        },
+        
+        checkWebpSupport: function() {
+            const webpImage = new Image();
+            webpImage.onload = () => { 
+                this.features.webp = true; 
+                document.documentElement.classList.add('webp');
+            };
+            webpImage.onerror = () => { 
+                this.features.webp = false; 
+                document.documentElement.classList.add('no-webp');
+            };
+            webpImage.src = 'data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==';
+        },
+        
+        checkWebGL: function() {
+            try {
+                const canvas = document.createElement('canvas');
+                this.features.webgl = !!(
+                    window.WebGLRenderingContext && 
+                    (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
+                );
+            } catch (e) {
+                this.features.webgl = false;
+            }
+            
+            if (this.features.webgl) {
+                document.documentElement.classList.add('webgl');
+            } else {
+                document.documentElement.classList.add('no-webgl');
+            }
+        },
+        
+        checkPassiveEvents: function() {
+            try {
+                let opts = Object.defineProperty({}, 'passive', {
+                    get: function() {
+                        this.features.passiveEvents = true;
+                        return true;
+                    }
+                });
+                window.addEventListener('test', null, opts);
+                window.removeEventListener('test', null, opts);
+            } catch (e) {
+                this.features.passiveEvents = false;
+            }
+        },
+        
+        checkLocalStorage: function() {
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                this.features.localStorage = true;
+            } catch (e) {
+                this.features.localStorage = false;
+                console.warn('localStorage not supported');
+            }
+        },
+        
+        checkES6Support: function() {
+            try {
+                // Check for ES6 features like arrow functions, template literals, let/const, etc.
+                new Function('(a = 0) => a');
+                this.features.es6 = true;
+            } catch (e) {
+                this.features.es6 = false;
+                console.warn('ES6 features not fully supported');
+            }
+        },
+        
+        applyCompatibilityFixes: function() {
+            // Add polyfills and fallbacks for browsers without certain features
+            
+            // Add CSS classes to html element for feature-based styling
+            const htmlEl = document.documentElement;
+            
+            // Add browser classes
+            htmlEl.classList.add(this.browser.name.toLowerCase().replace(/\s+/g, '-'));
+            if (this.browser.isMobile) htmlEl.classList.add('mobile-device');
+            if (this.browser.isOldBrowser) htmlEl.classList.add('legacy-browser');
+            
+            // Add feature classes
+            if (!this.features.flexbox) htmlEl.classList.add('no-flexbox');
+            if (!this.features.grid) htmlEl.classList.add('no-grid');
+            if (!this.features.backdrop) htmlEl.classList.add('no-backdrop-filter');
+            
+            // Adjust for low-end devices or older browsers
+            if (this.browser.isOldBrowser || !this.features.webgl) {
+                // Reduce animations and effects for performance
+                htmlEl.classList.add('reduced-motion');
+                
+                // Force reduced animations regardless of user preference
+                document.querySelector('body').style.setProperty('--transition-speed', '0.1s');
+                document.querySelector('body').style.setProperty('--animation-speed', '0.1s');
+                
+                console.log('Applied reduced animations for compatibility');
+            }
+            
+            // Apply fix for backdrop-filter
+            if (!this.features.backdrop) {
+                // Add a fallback for glass morphism effects
+                const glassElements = document.querySelectorAll('.ai-glass-container, .glass-effect');
+                glassElements.forEach(el => {
+                    el.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                });
+                
+                console.log('Applied backdrop-filter fallbacks');
+            }
+        },
+        
+        notifyUserOfCompatibilityIssues: function() {
+            if (this.browser.isOldBrowser) {
+                // Create a notification for users with older browsers
+                const notification = document.createElement('div');
+                notification.className = 'browser-compatibility-alert';
+                notification.innerHTML = `
+                    <div class="compatibility-content">
+                        <p><strong>Your browser may not support all features of this website.</strong></p>
+                        <p>For the best experience, please update your browser or try Chrome, Firefox, or Edge.</p>
+                        <button class="close-notification">×</button>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Add click handler for the close button
+                notification.querySelector('.close-notification').addEventListener('click', function() {
+                    notification.style.display = 'none';
+                    
+                    // Save dismissal in localStorage if available
+                    if (browserSupport.features.localStorage) {
+                        localStorage.setItem('browser-alert-dismissed', 'true');
+                    }
+                });
+                
+                // Only show if not previously dismissed
+                if (browserSupport.features.localStorage && localStorage.getItem('browser-alert-dismissed') === 'true') {
+                    notification.style.display = 'none';
+                }
+                
+                console.log('Added browser compatibility notification');
+            }
+        }
+    };
+    
+    // Initialize browser support module when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        browserSupport.init();
+    });
+    
+    // Make browserSupport available to other scripts
+    window.browserSupport = browserSupport;
+    
+})(); 

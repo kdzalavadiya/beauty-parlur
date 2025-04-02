@@ -89,6 +89,9 @@
     <link rel="stylesheet" href="css/gallery.css" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="css/footer.css" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="css/mobile-nav.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="css/product-recommender.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="css/ui-enhancements.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="css/timeline.css" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="styles.css" media="print" onload="this.media='all'">
     <noscript>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet">
@@ -101,13 +104,25 @@
         <link rel="stylesheet" href="css/gallery.css">
         <link rel="stylesheet" href="css/footer.css">
         <link rel="stylesheet" href="css/mobile-nav.css">
+        <link rel="stylesheet" href="css/product-recommender.css">
+        <link rel="stylesheet" href="css/ui-enhancements.css">
+        <link rel="stylesheet" href="css/timeline.css">
         <link rel="stylesheet" href="styles.css">
+    </noscript>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     </noscript>
     
     <!-- Critical Scripts - Load early but execute after DOM is ready -->
     <script src="js/gallery-init.js" defer></script>
     
     <title>New Real Bridal Studio - Luxury Bridal Makeovers & Services</title>
+    
+    <!-- Browser-only script for running without server -->
+    <script src="js/index.js" defer></script>
 </head>
 <body>
     <!-- Loading Screen -->
@@ -120,8 +135,7 @@
         </div>
     </div>
     
-    <!-- Accessibility Skip Link -->
-    <a href="#main-content" class="skip-link">Skip to content</a>
+
     
     <!-- Navigation -->
     <nav>
@@ -176,23 +190,6 @@
     <!-- Hero Section -->
     <section id="home" class="hero">
         <div id="particles-js"></div>
-        <div class="bubble-background">
-            <div class="bubble"></div>
-            <div class="bubble"></div>
-            <div class="bubble"></div>
-            <div class="bubble"></div>
-            <div class="bubble"></div>
-            <div class="bubble"></div>
-            <div class="bubble"></div>
-            <div class="bubble"></div>
-            <div class="bubble"></div>
-            <div class="bubble"></div>
-            <div class="bubble"></div>
-            <div class="bubble"></div>
-            <div class="bubble"></div>
-            <div class="bubble"></div>
-            <div class="bubble"></div>
-        </div>
         <div class="container">
             <div class="hero-content">
                 <h1 class="hero-title">Your Dream Wedding Begins Here</h1>
@@ -292,6 +289,98 @@
                         <a href="#booking" class="card-btn">Book Now</a>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Wedding Timeline Section -->
+    <section id="wedding-timeline" class="timeline-section">
+        <div class="timeline-container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>Your Wedding Journey</h2>
+                <p>A step-by-step guide to your perfect bridal experience</p>
+            </div>
+            
+            <div class="timeline">
+                <!-- Timeline Item 1 -->
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="timeline-date">3-6 Months Before</div>
+                        <h3 class="timeline-title">Initial Consultation</h3>
+                        <div class="timeline-image">
+                            <img data-src="https://placehold.co/600x400/f178b6/ffffff?text=Consultation" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3C/svg%3E" alt="Bridal Consultation" loading="lazy">
+                        </div>
+                        <p class="timeline-text">Schedule your initial consultation to discuss your vision, preferences, and wedding details. We'll help you choose the perfect bridal look and create a personalized beauty plan.</p>
+                    </div>
+                </div>
+                
+                <!-- Timeline Item 2 -->
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-icon">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <div class="timeline-date">2-3 Months Before</div>
+                        <h3 class="timeline-title">Makeup & Hair Trial</h3>
+                        <div class="timeline-image">
+                            <img data-src="https://placehold.co/600x400/f178b6/ffffff?text=Makeup+Trial" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3C/svg%3E" alt="Makeup Trial Session" loading="lazy">
+                        </div>
+                        <p class="timeline-text">Experience your wedding look beforehand with our detailed trial session. We'll perfect your makeup palette, hairstyle, and accessories to ensure everything is exactly as you envision.</p>
+                    </div>
+                </div>
+                
+                <!-- Timeline Item 3 -->
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-icon">
+                            <i class="fas fa-spa"></i>
+                        </div>
+                        <div class="timeline-date">1 Month Before</div>
+                        <h3 class="timeline-title">Pre-Bridal Skincare</h3>
+                        <div class="timeline-image">
+                            <img data-src="https://placehold.co/600x400/f178b6/ffffff?text=Skincare" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3C/svg%3E" alt="Pre-Bridal Skincare" loading="lazy">
+                        </div>
+                        <p class="timeline-text">Begin your pre-bridal skincare routine to ensure glowing skin on your wedding day. Our specialists will recommend treatments and products tailored to your skin type.</p>
+                    </div>
+                </div>
+                
+                <!-- Timeline Item 4 -->
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-icon">
+                            <i class="fas fa-hand-sparkles"></i>
+                        </div>
+                        <div class="timeline-date">1-2 Days Before</div>
+                        <h3 class="timeline-title">Mehndi Ceremony</h3>
+                        <div class="timeline-image">
+                            <img data-src="https://placehold.co/600x400/f178b6/ffffff?text=Mehndi" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3C/svg%3E" alt="Mehndi Ceremony" loading="lazy">
+                        </div>
+                        <p class="timeline-text">Experience the traditional mehndi ceremony with our expert artists creating intricate designs. Allow proper time for the henna to develop into its rich color.</p>
+                    </div>
+                </div>
+                
+                <!-- Timeline Item 5 -->
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="timeline-date">Wedding Day</div>
+                        <h3 class="timeline-title">Bridal Transformation</h3>
+                        <div class="timeline-image">
+                            <img data-src="https://placehold.co/600x400/f178b6/ffffff?text=Wedding+Day" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3C/svg%3E" alt="Wedding Day Preparation" loading="lazy">
+                        </div>
+                        <p class="timeline-text">Relax and enjoy as our team expertly creates your perfect bridal look. We'll handle everything from makeup and hair to outfit draping and jewelry styling.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="timeline-cta" data-aos="fade-up">
+                <p>Ready to begin your bridal journey?</p>
+                <a href="#booking" class="btn">Book Your Consultation</a>
             </div>
         </div>
     </section>
@@ -847,7 +936,7 @@
        
     </footer>
     
-    <!-- Critical Scripts - Load first -->
+    <!-- Critical Scripts -->
     <script>
         // Handle loading screen with timeout to prevent endless loading
         document.addEventListener('DOMContentLoaded', function() {
@@ -862,108 +951,47 @@
             }, 500);
         });
         
-        // Define a variable for checking if particles.js is loaded
-        window.particlesJSLoaded = false;
-    </script>
-    <script src="js/particles.min.js" async onload="window.particlesJSLoaded = true;"></script>
-
-    <!-- Load essential scripts with performance optimizations -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Load scripts in the correct order with error handling
-            function loadScriptSequentially(scripts, index = 0) {
-                if (index >= scripts.length) return;
-                
-                const script = document.createElement('script');
-                script.src = scripts[index];
-                
-                script.onload = function() {
-                    // Load the next script
-                    loadScriptSequentially(scripts, index + 1);
-                };
-                
-                script.onerror = function() {
-                    console.error('Failed to load script:', scripts[index]);
-                    // Continue with the next script even if this one fails
-                    loadScriptSequentially(scripts, index + 1);
-                };
-                
-                document.body.appendChild(script);
-            }
-            
-            // Define scripts to load in sequence - prioritize gallery.js
-            const essentialScripts = [
-                'js/gallery.js', // Load gallery script first
-                'js/main.js',
-                'js/form-handlers.js',
-                'js/particles-config.js',
-                'js/testimonials.js',
-                'js/animations.js'
-            ];
-            
-            // Start loading essential scripts
-            loadScriptSequentially(essentialScripts);
-            
-            // Load non-critical scripts after page is fully loaded
-            window.addEventListener('load', function() {
-                // Delay loading of non-essential scripts
+        // Force hide the loading screen after a reasonable timeout
+        setTimeout(function() {
+            const loadingScreen = document.querySelector('.loading-screen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('hidden');
                 setTimeout(function() {
-                    // Load animation libraries if needed
-                    if (typeof AOS === 'undefined') {
-                        const aosScript = document.createElement('script');
-                        aosScript.src = 'https://unpkg.com/aos@next/dist/aos.js';
-                        aosScript.async = true;
-                        
-                        aosScript.onload = function() {
-                            if (typeof AOS !== 'undefined') {
-                                AOS.init({
-                                    duration: 800,
-                                    once: true,
-                                    offset: 100,
-                                    delay: 100,
-                                    easing: 'ease-in-out',
-                                    disable: window.innerWidth < 768 // Disable on mobile
-                                });
-                            }
-                        };
-                        
-                        document.body.appendChild(aosScript);
-                    }
-                }, 1000);
-            });
-        });
+                    loadingScreen.style.display = 'none';
+                }, 300);
+            }
+        }, 3000);
     </script>
-    
-    <!-- Gallery initialization script -->
-    <script>
-        window.addEventListener('load', function() {
-            // Make sure gallery functionality is initialized
-            setTimeout(function() {
-                if (typeof window.initGalleryFunctionality === 'function') {
-                    console.log('Initializing gallery filter functionality');
-                    window.initGalleryFunctionality();
-                    
-                    // Ensure all gallery items have show class initially
-                    document.querySelectorAll('.gallery-item').forEach(function(item) {
-                        item.classList.add('show');
-                    });
-                    
-                    // Set the "All" filter as active
-                    const allFilterBtn = document.querySelector('.filter-btn[data-filter="all"]');
-                    if (allFilterBtn) {
-                        allFilterBtn.click();
-                    }
-                }
-            }, 500);
-        });
-    </script>
-    
-    <!-- Booking script -->
-    <script src="js/booking.js"></script>
     
     <!-- Back to Top Button -->
     <button class="back-to-top" aria-label="Back to top">
         <i class="fas fa-arrow-up"></i>
     </button>
+    
+    <!-- Core JavaScript -->
+    <script src="js/main.js"></script>
+    
+    <!-- Particles.js for background effects -->
+    <script src="js/particles.min.js"></script>
+    <script src="js/particles-config.js"></script>
+    
+    <!-- Gallery script with lightbox -->
+    <script src="js/lightbox.min.js"></script>
+    <script src="js/gallery.js"></script>
+    
+    <!-- Testimonials script -->
+    <script src="js/testimonials.js"></script>
+    
+    <!-- SVG Icons -->
+    <script src="js/svg-icons.js"></script>
+    
+    <!-- Booking script -->
+    <script src="js/booking.js"></script>
+    
+    <!-- Product Recommender script -->
+    <script src="js/product-recommender.js"></script>
+    
+    <!-- UI Enhancements -->
+    <script src="js/ui-enhancements.js"></script>
 </body>
-</html> 
+</html>
