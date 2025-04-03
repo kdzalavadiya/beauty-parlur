@@ -1,150 +1,498 @@
 /**
- * Testimonials slider functionality
+ * Testimonials slider functionality - God Level Edition
  */
 (function() {
-    // Check if testimonials section exists
-    const testimonialsSection = document.querySelector('#testimonials');
-    if (!testimonialsSection) return;
-
-    // Elements
-    const container = testimonialsSection.querySelector('.testimonials-container');
-    const testimonials = Array.from(testimonialsSection.querySelectorAll('.testimonial'));
-    const prevBtn = testimonialsSection.querySelector('.testimonial-prev');
-    const nextBtn = testimonialsSection.querySelector('.testimonial-next');
-    
-    // Variables
-    let currentIndex = 0;
-    let isAnimating = false;
-    const totalSlides = testimonials.length;
-    let touchStartX = 0;
-    let touchEndX = 0;
-    
-    // Add dots navigation
-    const dotsContainer = document.createElement('div');
-    dotsContainer.className = 'testimonial-dots';
-    testimonialsSection.querySelector('.testimonials-slider').appendChild(dotsContainer);
-    
-    // Create dots
-    testimonials.forEach((_, index) => {
-        const dot = document.createElement('button');
-        dot.className = 'testimonial-dot';
-        dot.setAttribute('aria-label', `Go to testimonial ${index + 1}`);
-        dot.setAttribute('type', 'button');
-        dot.addEventListener('click', () => goToSlide(index));
-        dotsContainer.appendChild(dot);
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize testimonials slider with enhanced features
+        initTestimonialsSlider();
     });
-    
-    const dots = Array.from(dotsContainer.querySelectorAll('.testimonial-dot'));
-    
-    // Initialize
-    function init() {
-        // Set initial slide
-        goToSlide(0);
+
+    /**
+     * Initialize the testimonial slider functionality with advanced animations
+     */
+    function initTestimonialsSlider() {
+        // Get testimonials section elements
+        const testimonialsSection = document.querySelector('.testimonials-section');
+        const testimonialsSlider = document.querySelector('.testimonials-slider');
+        const testimonialSlides = document.querySelectorAll('.testimonial-slide');
+        const prevButton = document.querySelector('.testimonial-prev');
+        const nextButton = document.querySelector('.testimonial-next');
+        const dotsContainer = document.querySelector('.testimonial-dots');
         
-        // Event listeners
-        prevBtn.addEventListener('click', prevSlide);
-        nextBtn.addEventListener('click', nextSlide);
+        // Exit if elements don't exist
+        if (!testimonialsSection || !testimonialsSlider || !testimonialSlides.length) {
+            console.log("Testimonial elements not found");
+            return;
+        }
         
-        // Touch events
-        container.addEventListener('touchstart', handleTouchStart, false);
-        container.addEventListener('touchmove', handleTouchMove, false);
-        container.addEventListener('touchend', handleTouchEnd, false);
+        console.log("Initializing advanced testimonial slider with", testimonialSlides.length, "slides");
         
-        // Keyboard navigation
-        testimonialsSection.addEventListener('keydown', handleKeydown);
+        // Add live region for accessibility
+        testimonialsSlider.setAttribute('aria-live', 'polite');
         
-        // Resize handling
-        window.addEventListener('resize', handleResize);
-        handleResize();
-    }
-    
-    // Go to specified slide
-    function goToSlide(index) {
-        if (isAnimating) return;
-        isAnimating = true;
-        
-        // Update current index
-        currentIndex = index;
-        
-        // Handle wrap-around
-        if (currentIndex < 0) currentIndex = totalSlides - 1;
-        if (currentIndex >= totalSlides) currentIndex = 0;
-        
-        // Move container
-        const slideWidth = testimonials[0].offsetWidth;
-        container.style.transform = `translateX(${-currentIndex * slideWidth}px)`;
-        
-        // Update aria attributes
-        testimonials.forEach((testimonial, i) => {
-            testimonial.setAttribute('aria-hidden', i !== currentIndex);
-            if (i === currentIndex) {
-                testimonial.removeAttribute('tabindex');
-            } else {
-                testimonial.setAttribute('tabindex', '-1');
+        // Set up variables
+        let currentSlide = 0;
+        let isAnimating = false;
+        let autoplayTimer = null;
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragOffset = 0;
+
+        // Add parallax effect elements to testimonial cards
+        testimonialSlides.forEach(slide => {
+            const card = slide.querySelector('.testimonial-card');
+            if (card) {
+                // Add shine effect element
+                const shine = document.createElement('div');
+                shine.className = 'card-shine';
+                card.appendChild(shine);
+                
+                // Setup mouse move effect for 3D hover
+                card.addEventListener('mousemove', handleCardMouseMove);
+                card.addEventListener('mouseleave', handleCardMouseLeave);
             }
+            
+            // Add star pulsing effect
+            const stars = slide.querySelectorAll('.testimonial-rating i');
+            stars.forEach((star, i) => {
+                star.style.setProperty('--i', i);
+            });
         });
         
-        // Update active dot
-        dots.forEach((dot, i) => {
-            dot.classList.toggle('active', i === currentIndex);
-            dot.setAttribute('aria-current', i === currentIndex ? 'true' : 'false');
-        });
+        // Create dots if container exists but no dots
+        if (dotsContainer && !dotsContainer.querySelector('.testimonial-dot')) {
+            createDots();
+        }
         
-        // Reset animation flag after transition
+        // Set initial position with animation
         setTimeout(() => {
-            isAnimating = false;
-        }, 400); // Match this with CSS transition time
-    }
-    
-    // Previous slide
-    function prevSlide() {
-        goToSlide(currentIndex - 1);
-    }
-    
-    // Next slide
-    function nextSlide() {
-        goToSlide(currentIndex + 1);
-    }
-    
-    // Handle touch start
-    function handleTouchStart(e) {
-        touchStartX = e.touches[0].clientX;
-    }
-    
-    // Handle touch move
-    function handleTouchMove(e) {
-        touchEndX = e.touches[0].clientX;
-    }
-    
-    // Handle touch end
-    function handleTouchEnd() {
-        const touchDiff = touchStartX - touchEndX;
+            updateSlides(true);
+        }, 100);
         
-        // Determine if it was a swipe (minimum threshold)
-        if (Math.abs(touchDiff) > 50) {
-            if (touchDiff > 0) {
-                nextSlide(); // Swipe left, go to next
+        // Add event listeners
+        if (prevButton && nextButton) {
+            prevButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                addRippleEffect(this);
+                slidePrev();
+            });
+            
+            nextButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                addRippleEffect(this);
+                slideNext();
+            });
+        }
+        
+        // Add touch and drag events
+        testimonialsSlider.addEventListener('touchstart', handleTouchStart, { passive: true });
+        testimonialsSlider.addEventListener('touchend', handleTouchEnd, { passive: true });
+        
+        // Add mouse drag for desktop
+        testimonialsSlider.addEventListener('mousedown', handleDragStart);
+        document.addEventListener('mousemove', handleDragMove);
+        document.addEventListener('mouseup', handleDragEnd);
+        
+        // Add keyboard navigation
+        testimonialsSection.addEventListener('keydown', handleKeyboard);
+        
+        // Start autoplay with fade-in delay
+        setTimeout(() => {
+            startAutoplay();
+            
+            // Pause autoplay on hover or focus
+            testimonialsSlider.addEventListener('mouseenter', stopAutoplay);
+            testimonialsSlider.addEventListener('mouseleave', startAutoplay);
+            testimonialsSlider.addEventListener('focusin', stopAutoplay);
+            testimonialsSlider.addEventListener('focusout', startAutoplay);
+        }, 1000);
+        
+        /**
+         * Handle card mouse move for 3D effect
+         */
+        function handleCardMouseMove(e) {
+            if (window.innerWidth < 768) return;
+            
+            const card = this;
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateY = (x - centerX) / 20;
+            const rotateX = (centerY - y) / 20;
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            
+            // Update shine effect
+            const shine = card.querySelector('.card-shine');
+            if (shine) {
+                const shineX = (x / rect.width) * 100;
+                const shineY = (y / rect.height) * 100;
+                shine.style.background = `radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 80%)`;
+            }
+        }
+        
+        /**
+         * Handle card mouse leave to reset 3D effect
+         */
+        function handleCardMouseLeave() {
+            this.style.transform = '';
+            
+            // Reset shine effect
+            const shine = this.querySelector('.card-shine');
+            if (shine) {
+                shine.style.background = 'none';
+            }
+        }
+        
+        /**
+         * Add ripple effect to buttons
+         */
+        function addRippleEffect(button) {
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple-effect';
+            button.appendChild(ripple);
+            
+            // Position the ripple element
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${-size/2 + rect.width/2}px`;
+            ripple.style.top = `${-size/2 + rect.height/2}px`;
+            
+            // Remove ripple after animation completes
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        }
+        
+        /**
+         * Create pagination dots
+         */
+        function createDots() {
+            // Calculate total number of slides
+            for (let i = 0; i < testimonialSlides.length; i++) {
+                const dot = document.createElement('button');
+                dot.className = 'testimonial-dot';
+                dot.setAttribute('aria-label', `Go to testimonial ${i + 1}`);
+                dot.addEventListener('click', () => goToSlide(i));
+                dotsContainer.appendChild(dot);
+            }
+            
+            updateActiveDot();
+        }
+        
+        /**
+         * Update active dot
+         */
+        function updateActiveDot() {
+            const dots = document.querySelectorAll('.testimonial-dot');
+            
+            dots.forEach((dot, index) => {
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                    dot.setAttribute('aria-current', 'true');
+                } else {
+                    dot.classList.remove('active');
+                    dot.setAttribute('aria-current', 'false');
+                }
+            });
+        }
+        
+        /**
+         * Handle drag start for mouse drag
+         */
+        function handleDragStart(e) {
+            if (isAnimating) return;
+            stopAutoplay();
+            
+            isDragging = true;
+            dragStartX = e.clientX;
+            testimonialsSlider.style.cursor = 'grabbing';
+            
+            // Prevent text selection during drag
+            e.preventDefault();
+        }
+        
+        /**
+         * Handle drag move for mouse drag
+         */
+        function handleDragMove(e) {
+            if (!isDragging) return;
+            
+            const dragCurrentX = e.clientX;
+            dragOffset = dragCurrentX - dragStartX;
+            
+            // Apply a resistance factor to make drag feel more natural
+            const resistance = 0.4;
+            const moveX = dragOffset * resistance;
+            
+            // Apply drag effect to slides
+            testimonialSlides.forEach((slide, i) => {
+                const isActive = i === currentSlide;
+                const isPrev = i === ((currentSlide - 1 + testimonialSlides.length) % testimonialSlides.length);
+                const isNext = i === ((currentSlide + 1) % testimonialSlides.length);
+                
+                if (isActive) {
+                    slide.style.transform = `translateX(${moveX}px) scale(1)`;
+                } else if (isPrev && dragOffset > 0) {
+                    const scale = 0.85 + Math.min(0.15, Math.abs(dragOffset) / 500);
+                    slide.style.transform = `translateX(${-220 + moveX}px) scale(${scale})`;
+                    slide.style.opacity = 0.5 + Math.min(0.5, Math.abs(dragOffset) / 500);
+                } else if (isNext && dragOffset < 0) {
+                    const scale = 0.85 + Math.min(0.15, Math.abs(dragOffset) / 500);
+                    slide.style.transform = `translateX(${220 + moveX}px) scale(${scale})`;
+                    slide.style.opacity = 0.5 + Math.min(0.5, Math.abs(dragOffset) / 500);
+                }
+            });
+        }
+        
+        /**
+         * Handle drag end for mouse drag
+         */
+        function handleDragEnd() {
+            if (!isDragging) return;
+            
+            isDragging = false;
+            testimonialsSlider.style.cursor = '';
+            
+            // Reset slide transforms
+            testimonialSlides.forEach(slide => {
+                slide.style.transform = '';
+                slide.style.opacity = '';
+            });
+            
+            // Determine if we should navigate based on drag distance
+            if (Math.abs(dragOffset) > 100) {
+                if (dragOffset > 0) {
+                    slidePrev();
+                } else {
+                    slideNext();
+                }
             } else {
-                prevSlide(); // Swipe right, go to previous
+                // Not enough drag distance, reset to current slide
+                updateSlides(true);
+            }
+            
+            dragOffset = 0;
+            startAutoplay();
+        }
+        
+        /**
+         * Go to previous slide
+         */
+        function slidePrev() {
+            if (isAnimating) return;
+            
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            } else {
+                // Loop to the end
+                goToSlide(testimonialSlides.length - 1);
+            }
+        }
+        
+        /**
+         * Go to next slide
+         */
+        function slideNext() {
+            if (isAnimating) return;
+            
+            if (currentSlide < testimonialSlides.length - 1) {
+                goToSlide(currentSlide + 1);
+            } else {
+                // Loop to the beginning
+                goToSlide(0);
+            }
+        }
+        
+        /**
+         * Go to specific slide
+         */
+        function goToSlide(index) {
+            if (isAnimating || index === currentSlide) return;
+            
+            isAnimating = true;
+            
+            // Get direction for animation
+            const direction = index > currentSlide ? 'next' : 'prev';
+            
+            // Set previous active slide
+            const prevActive = currentSlide;
+            
+            // Update current slide index
+            currentSlide = index;
+            
+            // Update slide classes with direction-aware transitions
+            updateSlides(false, direction, prevActive);
+            
+            // Reset autoplay
+            if (autoplayTimer) {
+                stopAutoplay();
+                startAutoplay();
+            }
+        }
+        
+        /**
+         * Update slider with active classes and transitions
+         */
+        function updateSlides(immediate = false, direction = 'next', prevActive = null) {
+            // Reset all slides
+            testimonialSlides.forEach((slide, i) => {
+                // Clear existing classes first
+                slide.classList.remove('active', 'prev', 'next');
+                
+                // Clear any inline styles from dragging
+                if (immediate) {
+                    slide.style.transform = '';
+                    slide.style.opacity = '';
+                    slide.style.transition = 'none';
+                    
+                    // Force reflow
+                    void slide.offsetWidth;
+                    slide.style.transition = '';
+                }
+                
+                // Set ARIA attributes for accessibility
+                if (i === currentSlide) {
+                    slide.setAttribute('aria-hidden', 'false');
+                } else {
+                    slide.setAttribute('aria-hidden', 'true');
+                }
+            });
+            
+            // If immediate update (init or reset), just set classes without transition logic
+            if (immediate) {
+                // Set active slide
+                testimonialSlides[currentSlide].classList.add('active');
+                
+                // Set previous slide
+                const prevIndex = (currentSlide - 1 + testimonialSlides.length) % testimonialSlides.length;
+                testimonialSlides[prevIndex].classList.add('prev');
+                
+                // Set next slide
+                const nextIndex = (currentSlide + 1) % testimonialSlides.length;
+                testimonialSlides[nextIndex].classList.add('next');
+            } else {
+                // Handle direction-aware transitions
+                if (direction === 'next') {
+                    // Current becomes active, Next becomes new next, and prev becomes prev
+                    testimonialSlides[currentSlide].classList.add('active');
+                    
+                    if (prevActive !== null) {
+                        testimonialSlides[prevActive].classList.add('prev');
+                    }
+                    
+                    const nextIndex = (currentSlide + 1) % testimonialSlides.length;
+                    testimonialSlides[nextIndex].classList.add('next');
+                } else {
+                    // Current becomes active, Prev becomes new prev, and next becomes next
+                    testimonialSlides[currentSlide].classList.add('active');
+                    
+                    if (prevActive !== null) {
+                        testimonialSlides[prevActive].classList.add('next');
+                    }
+                    
+                    const prevIndex = (currentSlide - 1 + testimonialSlides.length) % testimonialSlides.length;
+                    testimonialSlides[prevIndex].classList.add('prev');
+                }
+            }
+            
+            // Update active dot
+            updateActiveDot();
+            
+            // Clear animation flag after transition
+            setTimeout(() => {
+                isAnimating = false;
+            }, 700);
+            
+            // Announce for screen readers
+            announceSlideChange();
+        }
+        
+        /**
+         * Handle touch start
+         */
+        function handleTouchStart(e) {
+            touchStartX = e.changedTouches[0].screenX;
+            stopAutoplay();
+        }
+        
+        /**
+         * Handle touch end
+         */
+        function handleTouchEnd(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            
+            const touchDiff = touchStartX - touchEndX;
+            
+            // Detect swipe with threshold
+            if (touchDiff > 70) {
+                slideNext();
+            } else if (touchDiff < -70) {
+                slidePrev();
+            }
+            
+            startAutoplay();
+        }
+        
+        /**
+         * Handle keyboard navigation
+         */
+        function handleKeyboard(e) {
+            if (e.key === 'ArrowLeft') {
+                slidePrev();
+                e.preventDefault();
+            } else if (e.key === 'ArrowRight') {
+                slideNext();
+                e.preventDefault();
+            }
+        }
+        
+        /**
+         * Start autoplay
+         */
+        function startAutoplay() {
+            stopAutoplay();
+            autoplayTimer = setInterval(() => {
+                slideNext();
+            }, 5000); // Change slide every 5 seconds
+        }
+        
+        /**
+         * Stop autoplay
+         */
+        function stopAutoplay() {
+            if (autoplayTimer) {
+                clearInterval(autoplayTimer);
+                autoplayTimer = null;
+            }
+        }
+        
+        /**
+         * Announce slide change to screen readers
+         */
+        function announceSlideChange() {
+            const liveRegion = testimonialsSection.querySelector('.sr-only');
+            
+            if (!liveRegion) {
+                const newLiveRegion = document.createElement('div');
+                newLiveRegion.className = 'sr-only';
+                newLiveRegion.setAttribute('aria-live', 'polite');
+                testimonialsSection.appendChild(newLiveRegion);
+                
+                setTimeout(() => {
+                    newLiveRegion.textContent = `Showing testimonial ${currentSlide + 1} of ${testimonialSlides.length}`;
+                }, 100);
+            } else {
+                liveRegion.textContent = `Showing testimonial ${currentSlide + 1} of ${testimonialSlides.length}`;
             }
         }
     }
-    
-    // Handle keyboard navigation
-    function handleKeydown(e) {
-        if (e.key === 'ArrowLeft') {
-            prevSlide();
-        } else if (e.key === 'ArrowRight') {
-            nextSlide();
-        }
-    }
-    
-    // Handle resize
-    function handleResize() {
-        // Ensure slides are positioned correctly after resize
-        goToSlide(currentIndex);
-    }
-    
-    // Initialize
-    init();
 })(); 

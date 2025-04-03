@@ -1,553 +1,756 @@
 /**
- * Animations for Real Bridal Studio
- * Optimized for performance with reduced properties and improved transitions
+ * Advanced Animations & Effects
+ * Performance-optimized animations for New Real Bridal Studio
  */
 
-(function() {
-    // Initialize when document is fully loaded
-    window.addEventListener('load', function() {
-        // Initialize animations only if required libraries are loaded
-        if (typeof AOS !== 'undefined') {
-            initAOS();
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if user prefers reduced motion
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
+    // Initialize animations based on user preference
+    if (!prefersReducedMotion) {
+        // Initialize all animation systems with normal settings
+        initIntersectionObserver();
+        initParallaxEffects();
+        // Only use mouse tracking on desktop
+        if (window.innerWidth > 768) {
+            initMouseTrackingEffects();
         }
+        initFeatureSectionAnimations();
+        initHeroAnimations();
+        initPetalEffects();
+        initStickyNavbar();
+        initGalleryEffects();
+        initFloatingWidgetInteractions();
+        initTestimonialCarousel();
+    } else {
+        // Initialize with minimal animations for users who prefer reduced motion
+        initIntersectionObserver(true);
+        initHeroAnimations(true);
+        initStickyNavbar(true);
+    }
+    
+    // Add global ripple effect for buttons
+    document.addEventListener('click', addRippleEffect);
+});
+
+/**
+ * Initialize Intersection Observer for scroll-based animations
+ * This is a more efficient alternative to scroll event listeners
+ * @param {boolean} reducedMotion - Whether to use reduced motion animations
+ */
+function initIntersectionObserver(reducedMotion = false) {
+    // Elements that will be animated
+    const animatedElements = document.querySelectorAll('.card, .section-title, .gallery-item, .hero-title, .hero-text, .testimonial-card, .contact-form, .contact-info, .cta-section, .booking-form, .booking-features');
+    
+    // Configuration for Intersection Observer
+    const observerOptions = {
+        root: null, // Use viewport as root
+        threshold: 0.15, // Trigger when 15% of the element is visible
+        rootMargin: '0px 0px -50px 0px' // Slightly delayed activation
+    };
+    
+    // Create observer instance
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Add appropriate animation class based on element type
+                const element = entry.target;
+                
+                if (reducedMotion) {
+                    // Simple fade-in for reduced motion preference
+                    element.classList.add('animate', 'animate--simple-fade');
+                } else {
+                    if (element.classList.contains('card')) {
+                        element.classList.add('animate', 'animate--fade-in-up');
+                    } else if (element.classList.contains('section-title')) {
+                        element.classList.add('animate', 'animate--fade-in-down');
+                    } else if (element.classList.contains('gallery-item')) {
+                        element.classList.add('animate', 'animate--scale-in');
+                    } else if (element.classList.contains('hero-title')) {
+                        element.classList.add('animate', 'animate--fade-in');
+                    } else if (element.classList.contains('hero-text')) {
+                        element.classList.add('animate', 'animate--fade-in-up', 'animate--delay-2');
+                    } else if (element.classList.contains('testimonial-card')) {
+                        element.classList.add('animate', 'animate--scale-in');
+                    } else if (element.classList.contains('contact-form')) {
+                        element.classList.add('animate', 'animate--fade-in-right');
+                    } else if (element.classList.contains('contact-info')) {
+                        element.classList.add('animate', 'animate--fade-in-left');
+                    } else if (element.classList.contains('cta-section')) {
+                        element.classList.add('animate', 'animate--fade-in');
+                    } else if (element.classList.contains('booking-form')) {
+                        element.classList.add('animate', 'animate--fade-in-right');
+                    } else if (element.classList.contains('booking-features')) {
+                        element.classList.add('animate', 'animate--fade-in-left');
+                    }
+                    
+                    // Mark as animated for CSS transitions
+                    element.classList.add('animated');
+                }
+                
+                // Stop observing after animation has been triggered
+                observer.unobserve(element);
+            }
+        });
+    }, observerOptions);
+    
+    // Start observing elements
+    animatedElements.forEach(element => {
+        observer.observe(element);
+    });
+}
+
+/**
+ * Initialize parallax scrolling effects
+ */
+function initParallaxEffects() {
+    const parallaxElements = document.querySelectorAll('.parallax');
+    
+    // Skip if no parallax elements or if user prefers reduced motion
+    if (!parallaxElements.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+    }
+    
+    // Use passive scroll listener for better performance
+    window.addEventListener('scroll', function() {
+        const scrollY = window.scrollY;
         
-        // Initialize other animations
-        initDynamicBubbleBackground();
-        initBubbleAnimation();
-        initScrollAnimations();
-        initFloatingElements();
-        initBackToTopAnimation();
+        // Use requestAnimationFrame for smoother performance
+        requestAnimationFrame(function() {
+            parallaxElements.forEach(element => {
+                const scrollFactor = element.classList.contains('parallax--slow') ? 0.05 : 
+                                   element.classList.contains('parallax--medium') ? 0.1 : 0.15;
+                
+                // Calculate new position for smooth parallax effect
+                const yPos = -(scrollY * scrollFactor);
+                element.style.setProperty('--parallax-translate', `${yPos}px`);
+            });
+        });
+    }, { passive: true });
+}
+
+/**
+ * Track mouse movement for interactive elements
+ */
+function initMouseTrackingEffects() {
+    // Skip on mobile devices to save performance
+    if (window.matchMedia('(max-width: 768px)').matches) {
+        return;
+    }
+    
+    const heroSection = document.querySelector('.hero');
+    const cards = document.querySelectorAll('.card');
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    
+    // Add subtle tilt effects to hero section
+    if (heroSection) {
+        // Use a throttled version of mousemove for better performance
+        let lastExecution = 0;
+        const throttleDelay = 30; // milliseconds
         
-        if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-            initGSAPAnimations();
-        }
+        heroSection.addEventListener('mousemove', function(e) {
+            const now = Date.now();
+            if (now - lastExecution < throttleDelay) return;
+            lastExecution = now;
+            
+            const heroRect = this.getBoundingClientRect();
+            const mouseX = e.clientX - heroRect.left;
+            const mouseY = e.clientY - heroRect.top;
+            
+            // Calculate movement proportional to mouse position
+            const moveX = (mouseX - heroRect.width / 2) / 50;
+            const moveY = (mouseY - heroRect.height / 2) / 50;
+            
+            // Apply subtle transform to create a parallax effect
+            const heroContent = this.querySelector('.hero-content');
+            if (heroContent) {
+                requestAnimationFrame(() => {
+                    heroContent.style.transform = `translate3d(${moveX}px, ${moveY}px, 0)`;
+                });
+            }
+        });
+        
+        // Reset transform when mouse leaves hero section
+        heroSection.addEventListener('mouseleave', function() {
+            const heroContent = this.querySelector('.hero-content');
+            if (heroContent) {
+                requestAnimationFrame(() => {
+                    heroContent.style.transform = 'translate3d(0, 0, 0)';
+                });
+            }
+        });
+    }
+    
+    // Add subtle hover effect to cards - using event delegation for better performance
+    const cardContainer = document.querySelector('.services-section') || document.body;
+    
+    cardContainer.addEventListener('mousemove', function(e) {
+        const card = e.target.closest('.card');
+        if (!card) return;
+        
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Calculate tilt angle based on mouse position
+        const tiltX = (y / rect.height - 0.5) * 10;
+        const tiltY = (x / rect.width - 0.5) * -10;
+        
+        // Apply 3D transform using requestAnimationFrame
+        requestAnimationFrame(() => {
+            card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.02, 1.02, 1.02)`;
+        });
     });
     
-    /**
-     * AOS Animations with Reduced Properties
-     */
-    function initAOS() {
-        AOS.init({
-            duration: 800,
-            once: true,
-            offset: 100,
-            delay: 100,
-            easing: 'ease-in-out',
-            disable: 'mobile',  // Disable on mobile for performance
-            throttleDelay: 99   // Throttle for performance
+    // Reset transform when mouse leaves card
+    cardContainer.addEventListener('mouseleave', function(e) {
+        const card = e.target.closest('.card');
+        if (!card) return;
+        
+        requestAnimationFrame(() => {
+            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+        });
+    });
+    
+    // Add similar effect to gallery items
+    const galleryContainer = document.querySelector('.gallery-grid') || document.body;
+    
+    galleryContainer.addEventListener('mousemove', function(e) {
+        const galleryItem = e.target.closest('.gallery-item');
+        if (!galleryItem) return;
+        
+        const rect = galleryItem.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // More subtle tilt for gallery items
+        const tiltX = (y / rect.height - 0.5) * 5;
+        const tiltY = (x / rect.width - 0.5) * -5;
+        
+        requestAnimationFrame(() => {
+            galleryItem.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.01, 1.01, 1.01)`;
+        });
+    });
+    
+    galleryContainer.addEventListener('mouseleave', function(e) {
+        const galleryItem = e.target.closest('.gallery-item');
+        if (!galleryItem) return;
+        
+        requestAnimationFrame(() => {
+            galleryItem.style.transform = '';
+        });
+    });
+}
+
+/**
+ * Feature section animation initialization
+ */
+function initFeatureSectionAnimations() {
+    // Add staggered animations to service cards
+    const serviceCards = document.querySelectorAll('.card');
+    
+    serviceCards.forEach((card, index) => {
+        // Add delay class based on index
+        const delayClass = `animate--delay-${(index % 5) + 1}`;
+        card.classList.add(delayClass);
+    });
+    
+    // Floating effect for decorative elements
+    const decorElements = document.querySelectorAll('.icon-box, .service-icon, .hero-shape');
+    
+    decorElements.forEach((element, index) => {
+        // Alternate between float directions for more natural motion
+        const floatClass = index % 2 === 0 ? 'animate--float' : 'animate--float-alt';
+        element.classList.add(floatClass);
+    });
+    
+    // Add pulse animation to call-to-action buttons
+    const ctaButtons = document.querySelectorAll('.hero-cta .btn, .contact-form .btn, .booking-cta .btn');
+    
+    ctaButtons.forEach(button => {
+        button.classList.add('pulse-effect');
+    });
+}
+
+/**
+ * Hero section animations
+ * @param {boolean} reducedMotion - Whether to use reduced motion animations
+ */
+function initHeroAnimations(reducedMotion = false) {
+    const hero = document.querySelector('.hero');
+    
+    if (!hero) return;
+    
+    // Add animated class to hero content elements with delay
+    setTimeout(() => {
+        const heroTitle = hero.querySelector('.hero-title');
+        if (heroTitle) heroTitle.classList.add('animate', 'animate--fade-in');
+        
+        const heroText = hero.querySelector('.hero-text');
+        if (heroText) heroText.classList.add('animate', 'animate--fade-in-up', 'animate--delay-1');
+        
+        const heroCta = hero.querySelector('.hero-cta');
+        if (heroCta) heroCta.classList.add('animate', 'animate--fade-in-up', 'animate--delay-2');
+    }, 300);
+    
+    // Skip particle animations for reduced motion preference
+    if (reducedMotion) return;
+    
+    // Add the floating booking widget animation
+    const floatingWidget = document.querySelector('.floating-booking-widget');
+    if (floatingWidget) {
+        floatingWidget.classList.add('pulse-effect');
+    }
+}
+
+/**
+ * Add ripple effect to clickable elements
+ * @param {Event} e - Click event
+ */
+function addRippleEffect(e) {
+    const target = e.target;
+    
+    // Check if the clicked element is a button or has the ripple class
+    if (target.tagName.toLowerCase() === 'button' || 
+        target.classList.contains('btn') || 
+        target.classList.contains('card-btn') || 
+        target.classList.contains('ripple-effect-target')) {
+        
+        // Create ripple element
+        const ripple = document.createElement('span');
+        ripple.classList.add('ripple-effect');
+        
+        // Add ripple to the element
+        target.appendChild(ripple);
+        
+        // Position the ripple at click point
+        const rect = target.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height) * 2;
+        
+        ripple.style.width = ripple.style.height = `${size}px`;
+        ripple.style.left = `${e.clientX - rect.left}px`;
+        ripple.style.top = `${e.clientY - rect.top}px`;
+        
+        // Remove ripple after animation completes
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
+    }
+}
+
+/**
+ * Initialize sticky navbar behavior
+ * @param {boolean} reducedMotion - Whether to use reduced motion animations
+ */
+function initStickyNavbar(reducedMotion = false) {
+    const navbar = document.querySelector('.navbar');
+    if (!navbar) return;
+    
+    let lastScrollTop = 0;
+    const scrollThreshold = 100; // When to start making navbar sticky
+    
+    window.addEventListener('scroll', function() {
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Only apply sticky nav after scrolling down a bit
+        if (currentScroll > scrollThreshold) {
+            navbar.classList.add('nav-sticky');
+            
+            // Show/hide navbar based on scroll direction
+            if (!reducedMotion) {
+                if (currentScroll > lastScrollTop) {
+                    // Scrolling down
+                    navbar.classList.add('nav-hidden');
+                    navbar.classList.remove('nav-visible');
+                } else {
+                    // Scrolling up
+                    navbar.classList.remove('nav-hidden');
+                    navbar.classList.add('nav-visible');
+                }
+            }
+        } else {
+            // At the top of the page
+            navbar.classList.remove('nav-sticky', 'nav-hidden', 'nav-visible');
+        }
+        
+        lastScrollTop = currentScroll;
+    }, { passive: true });
+}
+
+/**
+ * Initialize gallery effects
+ */
+function initGalleryEffects() {
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    
+    if (!galleryItems.length) return;
+    
+    // Apply staggered animations
+    galleryItems.forEach((item, index) => {
+        item.style.animationDelay = `${index * 0.1}s`;
+        
+        // Add click handler for lightbox if needed
+        item.addEventListener('click', function() {
+            // Implementation for gallery lightbox
+            const imgSrc = this.querySelector('img').getAttribute('src');
+            const caption = this.querySelector('.gallery-caption h4')?.textContent || '';
+            
+            openLightbox(imgSrc, caption);
+        });
+    });
+}
+
+/**
+ * Open a lightbox for gallery images
+ * @param {string} imgSrc - Source of the image
+ * @param {string} caption - Caption for the image
+ */
+function openLightbox(imgSrc, caption) {
+    // Only create if not already exists
+    if (!document.querySelector('.lightbox-overlay')) {
+        // Create lightbox elements
+        const lightbox = document.createElement('div');
+        lightbox.className = 'lightbox-overlay animate--fade-in';
+        
+        lightbox.innerHTML = `
+            <div class="lightbox-container">
+                <img src="${imgSrc}" alt="${caption}" class="lightbox-image animate--scale-in">
+                <div class="lightbox-caption">${caption}</div>
+                <button class="lightbox-close">&times;</button>
+                <button class="lightbox-prev">&lsaquo;</button>
+                <button class="lightbox-next">&rsaquo;</button>
+            </div>
+        `;
+        
+        // Add to body
+        document.body.appendChild(lightbox);
+        
+        // Prevent body scrolling
+        document.body.style.overflow = 'hidden';
+        
+        // Close lightbox when clicking outside or on close button
+        lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox || e.target.classList.contains('lightbox-close')) {
+                closeLightbox();
+            }
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', handleLightboxKeyboard);
+    }
+}
+
+/**
+ * Close the lightbox
+ */
+function closeLightbox() {
+    const lightbox = document.querySelector('.lightbox-overlay');
+    if (lightbox) {
+        lightbox.classList.add('animate--fade-out');
+        setTimeout(() => {
+            lightbox.remove();
+            document.body.style.overflow = '';
+        }, 300);
+        
+        // Remove keyboard event listener
+        document.removeEventListener('keydown', handleLightboxKeyboard);
+    }
+}
+
+/**
+ * Handle keyboard navigation in lightbox
+ * @param {KeyboardEvent} e - Keyboard event
+ */
+function handleLightboxKeyboard(e) {
+    switch (e.key) {
+        case 'Escape':
+            closeLightbox();
+            break;
+        case 'ArrowRight':
+            navigateLightbox('next');
+            break;
+        case 'ArrowLeft':
+            navigateLightbox('prev');
+            break;
+    }
+}
+
+/**
+ * Navigate between gallery images in lightbox
+ * @param {string} direction - Navigation direction ('prev' or 'next')
+ */
+function navigateLightbox(direction) {
+    const lightboxImg = document.querySelector('.lightbox-image');
+    if (!lightboxImg) return;
+    
+    const galleryItems = Array.from(document.querySelectorAll('.gallery-item img'));
+    const currentSrc = lightboxImg.getAttribute('src');
+    const currentIndex = galleryItems.findIndex(img => img.getAttribute('src') === currentSrc);
+    
+    if (currentIndex === -1) return;
+    
+    let newIndex;
+    if (direction === 'next') {
+        newIndex = (currentIndex + 1) % galleryItems.length;
+    } else {
+        newIndex = (currentIndex - 1 + galleryItems.length) % galleryItems.length;
+    }
+    
+    const newSrc = galleryItems[newIndex].getAttribute('src');
+    const newCaption = galleryItems[newIndex].closest('.gallery-item').querySelector('.gallery-caption h4')?.textContent || '';
+    
+    // Animate image change
+    lightboxImg.classList.add('animate--fade-out-quick');
+    setTimeout(() => {
+        lightboxImg.setAttribute('src', newSrc);
+        document.querySelector('.lightbox-caption').textContent = newCaption;
+        lightboxImg.classList.remove('animate--fade-out-quick');
+        lightboxImg.classList.add('animate--fade-in-quick');
+        
+        setTimeout(() => {
+            lightboxImg.classList.remove('animate--fade-in-quick');
+        }, 300);
+    }, 200);
+}
+
+/**
+ * Initialize floating booking widget interactions
+ */
+function initFloatingWidgetInteractions() {
+    const floatingWidget = document.querySelector('.floating-booking-widget');
+    const bookingForm = document.querySelector('.floating-booking-form');
+    
+    if (!floatingWidget || !bookingForm) return;
+    
+    floatingWidget.addEventListener('click', function() {
+        bookingForm.classList.toggle('active');
+    });
+    
+    // Close form when clicking the close button
+    const closeBtn = bookingForm.querySelector('.floating-form-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function() {
+            bookingForm.classList.remove('active');
         });
     }
     
-    /**
-     * Dynamic Bubble Background Animation
-     * Creates an interactive bubble effect with mouse tracking
-     */
-    function initDynamicBubbleBackground() {
-        const bubbleContainer = document.querySelector('.bubble-background');
-        if (!bubbleContainer) return;
-        
-        // Clear existing bubbles
-        bubbleContainer.innerHTML = '';
-        
-        // Create canvas element for bubbles
-        const canvas = document.createElement('canvas');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        canvas.style.position = 'absolute';
-        canvas.style.top = '0';
-        canvas.style.left = '0';
-        canvas.style.zIndex = '0';
-        bubbleContainer.appendChild(canvas);
-        
-        const ctx = canvas.getContext('2d');
-        
-        // Set up bubble properties
-        const bubbles = [];
-        const maxBubbles = window.innerWidth < 768 ? 50 : 80;
-        const colors = [
-            'rgba(241, 120, 182, 0.15)',
-            'rgba(241, 120, 182, 0.2)',
-            'rgba(241, 120, 182, 0.25)',
-            'rgba(247, 167, 207, 0.15)',
-            'rgba(247, 167, 207, 0.2)',
-            'rgba(247, 167, 207, 0.25)',
-            'rgba(255, 212, 229, 0.15)',
-            'rgba(255, 212, 229, 0.2)'
-        ];
-        
-        let mouseX = 0;
-        let mouseY = 0;
-        let mouseRadius = 100;
-        
-        // Track mouse position
-        document.addEventListener('mousemove', function(e) {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
-        
-        // Bubble class
-        class Bubble {
-            constructor() {
-                this.reset();
-            }
-            
-            reset() {
-                this.size = Math.random() * 10 + 3;
-                this.x = Math.random() * canvas.width;
-                this.y = canvas.height + this.size;
-                this.speed = Math.random() * 0.8 + 0.2;
-                this.velocityX = Math.random() * 2 - 1;
-                this.velocityY = -(Math.random() * 0.8 + 1.5);
-                this.color = colors[Math.floor(Math.random() * colors.length)];
-                this.opacity = Math.random() * 0.4 + 0.3;
-                this.rotation = Math.random() * 360;
-                this.rotationSpeed = (Math.random() * 2 - 1) * 0.1;
-                this.shadowBlur = Math.random() * 5;
-            }
-            
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = this.opacity;
-                ctx.shadowColor = this.color;
-                ctx.shadowBlur = this.shadowBlur;
-                ctx.fillStyle = this.color;
-                
-                // Create bubble
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Add highlight
-                ctx.beginPath();
-                ctx.arc(this.x - this.size * 0.3, this.y - this.size * 0.3, this.size * 0.3, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-                ctx.fill();
-                
-                ctx.restore();
-            }
-            
-            update() {
-                // Mouse interaction - gentle flow away from mouse
-                const dx = this.x - mouseX;
-                const dy = this.y - mouseY;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                
-                if (distance < mouseRadius) {
-                    const angle = Math.atan2(dy, dx);
-                    const force = (mouseRadius - distance) / mouseRadius;
-                    
-                    this.velocityX += Math.cos(angle) * force * 0.05;
-                    this.velocityY += Math.sin(angle) * force * 0.05;
-                }
-                
-                // Apply velocity with damping
-                this.velocityX *= 0.98;
-                this.velocityY *= 0.98;
-                
-                // Add slight randomness to movement
-                this.velocityX += (Math.random() - 0.5) * 0.02;
-                this.velocityY += (Math.random() - 0.5) * 0.02;
-                
-                // Update position
-                this.x += this.velocityX;
-                this.y += this.velocityY;
-                
-                // Rotation
-                this.rotation += this.rotationSpeed;
-                
-                // Check if bubble is out of bounds
-                if (this.y < -this.size * 2 || this.x < -this.size * 2 || this.x > canvas.width + this.size * 2) {
-                    this.reset();
-                }
-                
-                // Random opacity fluctuation
-                this.opacity += (Math.random() - 0.5) * 0.01;
-                this.opacity = Math.max(0.2, Math.min(0.7, this.opacity));
-            }
-        }
-        
-        // Initialize bubbles
-        for (let i = 0; i < maxBubbles; i++) {
-            const bubble = new Bubble();
-            // Set initial positions throughout the canvas
-            bubble.y = Math.random() * canvas.height;
-            bubbles.push(bubble);
-        }
-        
-        // Animation loop
-        function animate() {
-            // Clear canvas with very subtle gradient
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Update and draw bubbles
-            bubbles.forEach(bubble => {
-                bubble.update();
-                bubble.draw();
-            });
-            
-            // Request next frame
-            requestAnimationFrame(animate);
-        }
-        
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            mouseRadius = Math.min(canvas.width, canvas.height) * 0.1;
-        });
-        
-        // Start animation
-        animate();
-    }
-
-    /**
-     * Original Bubble Animation (as fallback)
-     */
-    function initBubbleAnimation() {
-        const bubbleContainer = document.querySelector('.bubble-background');
-        if (!bubbleContainer || bubbleContainer.querySelector('canvas')) return;
-        
-        // Skip if canvas has been added by dynamic bubble background
-        if (bubbleContainer.querySelector('canvas')) return;
-        
-        // Create random bubbles dynamically (simpler version as fallback)
-        const bubbleCount = 40;
-        
-        // Clear existing bubbles
-        bubbleContainer.innerHTML = '';
-        
-        // Create new bubbles
-        for (let i = 0; i < bubbleCount; i++) {
-            createBubble(bubbleContainer);
-        }
-        
-        // Create bubble with random properties
-        function createBubble(container) {
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble';
-            
-            // Random size between 10px and 60px
-            const size = Math.floor(Math.random() * 50) + 10;
-            bubble.style.width = `${size}px`;
-            bubble.style.height = `${size}px`;
-            
-            // Random horizontal position
-            bubble.style.left = `${Math.random() * 100}%`;
-            
-            // Random delay
-            bubble.style.animationDelay = `${Math.random() * 10}s`;
-            
-            // Random duration between 10s and 20s
-            bubble.style.animationDuration = `${Math.random() * 10 + 10}s`;
-            
-            // Random opacity
-            bubble.style.opacity = (Math.random() * 0.6 + 0.2).toFixed(2);
-            
-            // Random background color
-            const colors = [
-                'rgba(241, 120, 182, 0.2)',
-                'rgba(241, 120, 182, 0.25)',
-                'rgba(241, 120, 182, 0.3)',
-                'rgba(247, 167, 207, 0.2)',
-                'rgba(247, 167, 207, 0.25)',
-                'rgba(247, 167, 207, 0.3)'
-            ];
-            bubble.style.background = colors[Math.floor(Math.random() * colors.length)];
-            
-            // Add to container
-            container.appendChild(bubble);
-            
-            // Remove and recreate bubble after animation ends
-            bubble.addEventListener('animationend', function() {
-                this.remove();
-                createBubble(container);
-            });
-        }
-    }
-
-    /**
-     * Scroll Animations
-     */
-    function initScrollAnimations() {
-        // Add animation classes on scroll
-        window.addEventListener('scroll', function() {
-            const scrollPosition = window.scrollY;
-            
-            // Fade in elements as they enter viewport
-            document.querySelectorAll('.fade-in-element').forEach(element => {
-                const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-                const windowHeight = window.innerHeight;
-                
-                if (scrollPosition > elementPosition - windowHeight + 100) {
-                    element.classList.add('visible');
-                }
-            });
-        });
-    }
-
-    /**
-     * Floating Elements Animation
-     */
-    function initFloatingElements() {
-        const floatingElements = document.querySelectorAll('.floating-element');
-        
-        floatingElements.forEach(element => {
-            // Random initial position
-            const randomX = Math.random() * 20 - 10; // -10px to 10px
-            const randomY = Math.random() * 20 - 10; // -10px to 10px
-            
-            // Random animation duration
-            const randomDuration = Math.random() * 2 + 3; // 3-5s
-            
-            // Apply styles
-            element.style.transform = `translate(${randomX}px, ${randomY}px)`;
-            element.style.animation = `float ${randomDuration}s ease-in-out infinite alternate`;
-        });
-    }
-
-    /**
-     * Back to Top Button Animation
-     */
-    function initBackToTopAnimation() {
-        const backToTopButton = document.querySelector('.back-to-top');
-        if (!backToTopButton) return;
-        
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 300) {
-                backToTopButton.classList.add('visible');
-            } else {
-                backToTopButton.classList.remove('visible');
-            }
-        });
-        
-        backToTopButton.addEventListener('click', function(e) {
+    // Handle form submission
+    const form = bookingForm.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Smooth scroll to top
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            // Show success toast notification
+            showToast('Booking request submitted successfully!', 'success');
+            
+            // Hide form
+            bookingForm.classList.remove('active');
+            
+            // Reset form
+            form.reset();
         });
     }
+}
 
-    /**
-     * GSAP Animations - Optimized
-     */
-    function initGSAPAnimations() {
-        try {
-            // Hero title reveal animation
-            gsap.from(".hero-title", {
-                duration: 1,
-                opacity: 0,
-                y: 30,
-                ease: "power3.out",
-                delay: 0.2
-            });
-            
-            // Hero text reveal animation
-            gsap.from(".hero-text", {
-                duration: 1,
-                opacity: 0,
-                y: 20,
-                ease: "power3.out",
-                delay: 0.4
-            });
-            
-            // Hero CTA buttons animation
-            gsap.from(".hero-cta .btn", {
-                duration: 0.8,
-                opacity: 0,
-                y: 15,
-                stagger: 0.15,
-                ease: "power2.out",
-                delay: 0.6
-            });
-            
-            // Section titles animation with ScrollTrigger
-            gsap.utils.toArray('.section-title').forEach((title) => {
-                gsap.from(title, {
-                    scrollTrigger: {
-                        trigger: title,
-                        start: "top 80%",
-                        toggleActions: "play none none none"
-                    },
-                    opacity: 0,
-                    y: 20,
-                    duration: 0.7,
-                    ease: "power2.out"
-                });
-            });
-            
-            // Testimonials animation
-            gsap.from(".testimonial", {
-                scrollTrigger: {
-                    trigger: ".testimonials-slider",
-                    start: "top 80%"
-                },
-                opacity: 0,
-                x: 30,
-                duration: 0.7,
-                stagger: 0.2,
-                ease: "power2.out"
-            });
-        } catch (error) {
-            console.error('GSAP animation error:', error);
-        }
+/**
+ * Display toast notification
+ * @param {string} message - Toast message
+ * @param {string} type - Toast type ('success', 'error', 'info', 'warning')
+ */
+function showToast(message, type = 'info') {
+    // Remove existing toast if any
+    const existingToast = document.querySelector('.toast');
+    if (existingToast) {
+        existingToast.remove();
     }
     
-    /**
-     * Track scroll position for animation optimization
-     */
-    function initScrollTracking() {
-        // Add scroll tracking for performance optimization
-        const scrollElements = document.querySelectorAll('.scroll-track');
-        
-        if (!scrollElements.length) return;
-        
-        if ('IntersectionObserver' in window) {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('in-view');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, {
-                threshold: 0.1
-            });
-            
-            scrollElements.forEach(element => {
-                observer.observe(element);
-            });
-        } else {
-            // Fallback for browsers without Intersection Observer
-            scrollElements.forEach(element => {
-                element.classList.add('in-view');
-            });
-        }
-    }
-
-    /**
-     * Animation and effects for cards and sections
-     */
-    function initFadeAnimations() {
-        const animatedElements = document.querySelectorAll('.fade-in, .fade-in-up, .fade-in-left, .fade-in-right, .zoom-in');
-        
-        if (animatedElements.length === 0) return;
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animated');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, {
-            threshold: 0.2,
-            rootMargin: '0px 0px -100px 0px'
-        });
-        
-        animatedElements.forEach(element => {
-            observer.observe(element);
-        });
-    }
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}-toast`;
     
-    // Initialize card hover effects
-    function initCardEffects() {
-        const cards = document.querySelectorAll('.card');
-        
-        cards.forEach(card => {
-            // Parallax effect on hover
-            card.addEventListener('mousemove', (e) => {
-                const cardRect = card.getBoundingClientRect();
-                const cardCenterX = cardRect.left + cardRect.width / 2;
-                const cardCenterY = cardRect.top + cardRect.height / 2;
-                
-                // Calculate how far the mouse is from the center of the card
-                const deltaX = e.clientX - cardCenterX;
-                const deltaY = e.clientY - cardCenterY;
-                
-                // Normalize by dividing by the dimensions of the card
-                const tiltX = deltaY / (cardRect.height / 2);
-                const tiltY = -deltaX / (cardRect.width / 2);
-                
-                // Apply transform with subtle tilt
-                card.style.transform = `perspective(1000px) rotateX(${tiltX * 2}deg) rotateY(${tiltY * 2}deg) translateZ(10px)`;
-            });
-            
-            // Reset on mouse leave
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
-                card.style.transition = 'transform 0.5s ease';
-            });
-            
-            // Remove transition on mouse enter to make tilt responsive
-            card.addEventListener('mouseenter', () => {
-                card.style.transition = 'transform 0.1s ease';
-            });
-        });
-    }
+    // Set icon based on type
+    let icon = '✓';
+    if (type === 'error') icon = '✕';
+    if (type === 'info') icon = 'ℹ';
+    if (type === 'warning') icon = '⚠';
     
-    // Add shine effect to hover-shine elements
-    function initShineEffect() {
-        const shineElements = document.querySelectorAll('.hover-shine');
-        
-        shineElements.forEach(element => {
-            element.addEventListener('mousemove', (e) => {
-                const elementRect = element.getBoundingClientRect();
-                const x = e.clientX - elementRect.left;
-                
-                // Calculate percentage position
-                const xPercent = Math.round(x / elementRect.width * 100);
-                
-                // Apply gradient position based on mouse position
-                element.style.setProperty('--x-position', xPercent + '%');
-            });
-        });
-    }
+    toast.innerHTML = `
+        <div class="toast-icon">${icon}</div>
+        <div class="toast-message">${message}</div>
+    `;
     
-    // Initialize parallax backgrounds
-    function initParallaxBackgrounds() {
-        const parallaxElements = document.querySelectorAll('.parallax-bg');
-        
-        window.addEventListener('scroll', () => {
-            const scrollTop = window.scrollY;
-            
-            parallaxElements.forEach(element => {
-                const speed = element.getAttribute('data-speed') || 0.5;
-                element.style.transform = `translateY(${scrollTop * speed}px)`;
-            });
-        });
-    }
+    // Add to body
+    document.body.appendChild(toast);
     
-    // Apply animations to footer icons
-    function initFooterAnimations() {
-        const socialLinks = document.querySelectorAll('.social-link');
-        
-        socialLinks.forEach((link, index) => {
-            link.style.animationDelay = `${index * 0.1}s`;
-        });
-    }
+    // Show with animation
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
     
-    // Initialize animations when DOM is loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        // Delay to ensure elements are painted
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
         setTimeout(() => {
-            initFadeAnimations();
-            initCardEffects();
-            initShineEffect();
-            initParallaxBackgrounds();
-            initFooterAnimations();
-        }, 100);
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
+
+/**
+ * Initialize testimonial carousel
+ */
+function initTestimonialCarousel() {
+    const testimonialSection = document.querySelector('.testimonials-section');
+    if (!testimonialSection) return;
+    
+    const testimonials = testimonialSection.querySelectorAll('.testimonial-card');
+    if (testimonials.length < 2) return;
+    
+    let currentSlide = 0;
+    const slideCount = testimonials.length;
+    
+    // Create carousel controls
+    const controlsContainer = document.createElement('div');
+    controlsContainer.className = 'carousel-controls';
+    
+    controlsContainer.innerHTML = `
+        <button class="carousel-prev" aria-label="Previous testimonial">&lsaquo;</button>
+        <div class="carousel-indicators"></div>
+        <button class="carousel-next" aria-label="Next testimonial">&rsaquo;</button>
+    `;
+    
+    testimonialSection.appendChild(controlsContainer);
+    
+    // Create indicators
+    const indicatorsContainer = controlsContainer.querySelector('.carousel-indicators');
+    
+    for (let i = 0; i < slideCount; i++) {
+        const indicator = document.createElement('span');
+        indicator.className = i === 0 ? 'active' : '';
+        indicator.setAttribute('data-index', i);
+        indicatorsContainer.appendChild(indicator);
+        
+        // Add click handler
+        indicator.addEventListener('click', function() {
+            goToSlide(parseInt(this.getAttribute('data-index')));
+        });
+    }
+    
+    // Add event listeners to controls
+    const prevButton = controlsContainer.querySelector('.carousel-prev');
+    const nextButton = controlsContainer.querySelector('.carousel-next');
+    
+    prevButton.addEventListener('click', () => {
+        goToSlide((currentSlide - 1 + slideCount) % slideCount);
     });
     
-    // Re-initialize on window resize (with debounce)
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-            initCardEffects();
-        }, 250);
+    nextButton.addEventListener('click', () => {
+        goToSlide((currentSlide + 1) % slideCount);
     });
-})(); 
+    
+    // Function to change slide
+    function goToSlide(index) {
+        // Update indicators
+        const indicators = indicatorsContainer.querySelectorAll('span');
+        indicators.forEach((indicator, i) => {
+            indicator.className = i === index ? 'active' : '';
+        });
+        
+        // Update testimonials
+        testimonials.forEach((testimonial, i) => {
+            if (i === index) {
+                testimonial.classList.add('active');
+                testimonial.classList.remove('inactive');
+            } else {
+                testimonial.classList.remove('active');
+                testimonial.classList.add('inactive');
+            }
+        });
+        
+        currentSlide = index;
+    }
+    
+    // Initialize first slide
+    goToSlide(0);
+    
+    // Auto-advance slides every 5 seconds
+    let autoplayInterval = setInterval(() => {
+        goToSlide((currentSlide + 1) % slideCount);
+    }, 5000);
+    
+    // Pause auto-advance on hover
+    testimonialSection.addEventListener('mouseenter', () => {
+        clearInterval(autoplayInterval);
+    });
+    
+    testimonialSection.addEventListener('mouseleave', () => {
+        autoplayInterval = setInterval(() => {
+            goToSlide((currentSlide + 1) % slideCount);
+        }, 5000);
+    });
+    
+    // Swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    testimonialSection.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    
+    testimonialSection.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, { passive: true });
+    
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        if (touchEndX < touchStartX - swipeThreshold) {
+            // Swipe left
+            goToSlide((currentSlide + 1) % slideCount);
+        } else if (touchEndX > touchStartX + swipeThreshold) {
+            // Swipe right
+            goToSlide((currentSlide - 1 + slideCount) % slideCount);
+        }
+    }
+}
+
+/**
+ * Add floating petal/flower effects
+ */
+function initPetalEffects() {
+    const sections = document.querySelectorAll('.hero-section, .cta-section');
+    
+    sections.forEach(section => {
+        // Create petals container if doesn't exist
+        let petalsContainer = section.querySelector('.petals-container');
+        
+        if (!petalsContainer) {
+            petalsContainer = document.createElement('div');
+            petalsContainer.className = 'petals-container';
+            section.appendChild(petalsContainer);
+        }
+        
+        // Create individual petals
+        const petalCount = section.classList.contains('hero-section') ? 12 : 8;
+        
+        for (let i = 0; i < petalCount; i++) {
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+            
+            // Randomize petal size, position, and animation
+            const size = Math.random() * 20 + 10;
+            petal.style.width = `${size}px`;
+            petal.style.height = `${size}px`;
+            
+            petal.style.left = `${Math.random() * 100}%`;
+            petal.style.animationDelay = `${Math.random() * 5}s`;
+            petal.style.animationDuration = `${Math.random() * 5 + 10}s`;
+            
+            // Add slight rotation variation
+            petal.style.transform = `rotate(${Math.random() * 360}deg)`;
+            
+            petalsContainer.appendChild(petal);
+        }
+    });
+} 

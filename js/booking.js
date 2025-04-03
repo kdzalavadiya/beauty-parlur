@@ -9,6 +9,7 @@
     const closeBookingBtn = document.getElementById('close-booking-form');
     const cancelBookingBtn = document.getElementById('cancel-booking-form');
     const bookingFormContainer = document.getElementById('booking-form-container');
+    const bookingOverlay = document.getElementById('booking-overlay');
     const bookingForm = document.getElementById('booking-form');
     
     // Log element status for debugging
@@ -16,6 +17,7 @@
     console.log('Close button found:', !!closeBookingBtn);
     console.log('Cancel button found:', !!cancelBookingBtn);
     console.log('Form container found:', !!bookingFormContainer);
+    console.log('Form overlay found:', !!bookingOverlay);
     console.log('Booking form found:', !!bookingForm);
     
     if (!openBookingBtn || !bookingFormContainer) {
@@ -27,8 +29,22 @@
     openBookingBtn.addEventListener('click', function(e) {
         console.log('Book appointment button clicked');
         e.preventDefault();
-        document.body.style.overflow = 'hidden'; // Prevent scrolling
-        bookingFormContainer.style.display = 'flex';
+        
+        // Position the form in the center of the viewport
+        const windowHeight = window.innerHeight;
+        const formHeight = Math.min(windowHeight * 0.9, 600); // Max 90% of viewport or 600px
+        
+        bookingFormContainer.style.top = '5%';
+        bookingFormContainer.style.maxHeight = formHeight + 'px';
+        bookingFormContainer.style.display = 'block';
+        
+        // Show overlay
+        if (bookingOverlay) {
+            bookingOverlay.style.display = 'block';
+            setTimeout(() => {
+                bookingOverlay.classList.add('active');
+            }, 10);
+        }
         
         // Delay to allow display to take effect before adding active class
         setTimeout(() => {
@@ -42,12 +58,25 @@
         console.log('Closing booking form');
         bookingFormContainer.classList.remove('active');
         
+        // Hide overlay
+        if (bookingOverlay) {
+            bookingOverlay.classList.remove('active');
+        }
+        
         // Wait for transition to complete before hiding
         setTimeout(() => {
             bookingFormContainer.style.display = 'none';
-            document.body.style.overflow = ''; // Restore scrolling
+            if (bookingOverlay) {
+                bookingOverlay.style.display = 'none';
+            }
             console.log('Booking form closed');
         }, 400); // Match with transition duration
+    }
+    
+    // Ensure scroll is restored - function no longer needed
+    function restoreScroll() {
+        // No need to restore scroll as we're never blocking it
+        console.log('Scroll already enabled');
     }
     
     // Close with close button
@@ -61,11 +90,9 @@
     }
     
     // Close when clicking outside the form
-    bookingFormContainer.addEventListener('click', function(e) {
-        if (e.target === bookingFormContainer) {
-            closeBookingForm();
-        }
-    });
+    if (bookingOverlay) {
+        bookingOverlay.addEventListener('click', closeBookingForm);
+    }
     
     // Handle ESC key
     document.addEventListener('keydown', function(e) {
@@ -120,13 +147,13 @@
             setTimeout(() => {
                 // Show success message
                 bookingFormContainer.innerHTML = `
-                    <div class="form-success-content">
-                        <div class="success-icon">
+                    <div class="form-success-content" style="padding: 30px; text-align: center;">
+                        <div class="success-icon" style="font-size: 60px; color: #4CAF50; margin-bottom: 20px;">
                             <i class="fas fa-check-circle"></i>
                         </div>
-                        <h3>Booking Successful!</h3>
-                        <p>Thank you for your booking request. We will contact you shortly to confirm your appointment.</p>
-                        <button type="button" class="btn" id="success-close-btn">Close</button>
+                        <h3 style="color: #333; font-size: 22px; margin-bottom: 10px;">Booking Successful!</h3>
+                        <p style="color: #666; font-size: 14px; margin-bottom: 25px;">Thank you for your booking request. We will contact you shortly to confirm your appointment.</p>
+                        <button type="button" class="btn" id="success-close-btn" style="padding: 12px 25px; background: linear-gradient(45deg, #f178b6, #f7a7cf); color: white; border: none; border-radius: 8px; cursor: pointer;">Close</button>
                     </div>
                 `;
                 
@@ -144,7 +171,9 @@
                 // Close button for success message
                 const successCloseBtn = document.getElementById('success-close-btn');
                 if (successCloseBtn) {
-                    successCloseBtn.addEventListener('click', closeBookingForm);
+                    successCloseBtn.addEventListener('click', function() {
+                        closeBookingForm();
+                    });
                 }
             }, 2000);
         });

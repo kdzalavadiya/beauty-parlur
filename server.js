@@ -1,58 +1,62 @@
+// Simple HTTP server for local development
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
+const PORT = 8000;
+const MIME_TYPES = {
+    '.html': 'text/html',
+    '.css': 'text/css',
+    '.js': 'text/javascript',
+    '.json': 'application/json',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.gif': 'image/gif',
+    '.svg': 'image/svg+xml',
+    '.ico': 'image/x-icon',
+    '.woff': 'font/woff',
+    '.woff2': 'font/woff2',
+    '.ttf': 'font/ttf',
+    '.otf': 'font/otf',
+    '.eot': 'application/vnd.ms-fontobject'
+};
+
 const server = http.createServer((req, res) => {
-    let filePath = '.' + req.url;
-    if (filePath === './') {
-        filePath = './index.html';
-    }
+    console.log(`Request: ${req.method} ${req.url}`);
 
-    const extname = path.extname(filePath);
-    let contentType = 'text/html';
-    switch (extname) {
-        case '.js':
-            contentType = 'text/javascript';
-            break;
-        case '.css':
-            contentType = 'text/css';
-            break;
-        case '.json':
-            contentType = 'application/json';
-            break;
-        case '.png':
-            contentType = 'image/png';
-            break;
-        case '.jpg':
-            contentType = 'image/jpg';
-            break;
-        case '.gif':
-            contentType = 'image/gif';
-            break;
-        case '.svg':
-            contentType = 'image/svg+xml';
-            break;
-    }
-
-    fs.readFile(filePath, (error, content) => {
-        if (error) {
-            if(error.code === 'ENOENT') {
-                fs.readFile('./404.html', (error, content) => {
+    // Handle root path as index.html
+    let filePath = req.url === '/' ? './index.html' : '.' + req.url;
+    
+    // Get the file extension to determine content type
+    const extname = path.extname(filePath).toLowerCase();
+    
+    // Default to binary if mime type is not recognized
+    const contentType = MIME_TYPES[extname] || 'application/octet-stream';
+    
+    // Read the file
+    fs.readFile(filePath, (err, content) => {
+        if (err) {
+            if (err.code === 'ENOENT') {
+                // File not found
+                fs.readFile('./404.html', (err, content) => {
                     res.writeHead(404, { 'Content-Type': 'text/html' });
-                    res.end(content, 'utf-8');
+                    res.end(content || 'File not found', 'utf-8');
                 });
             } else {
+                // Server error
                 res.writeHead(500);
-                res.end(`Server Error: ${error.code}`);
+                res.end(`Server Error: ${err.code}`);
             }
         } else {
+            // Success
             res.writeHead(200, { 'Content-Type': contentType });
             res.end(content, 'utf-8');
         }
     });
 });
 
-const PORT = 3000;
 server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}/`);
+    console.log(`Press Ctrl+C to stop the server`);
 }); 

@@ -14,7 +14,7 @@
     position: fixed;
     top: 0;
     right: 0;
-    width: 280px;
+    width: var(--sidebar-width);
     height: 100vh;
     max-height: 100%;
     background: white;
@@ -26,10 +26,15 @@
     flex-direction: column;
     will-change: transform; /* Performance optimization */
     transform: translateX(100%);
+    -webkit-overflow-scrolling: touch; /* For smoother scrolling on iOS */
+    visibility: hidden; /* Hide by default */
+    padding-top: env(safe-area-inset-top); /* For iPhone X+ notch */
+    padding-bottom: env(safe-area-inset-bottom); /* For bottom bar on modern phones */
 }
 
 .mobile-sidebar.active {
     transform: translateX(0);
+    visibility: visible;
 }
 
 /* Sidebar Header */
@@ -39,6 +44,10 @@
     align-items: center;
     padding: 20px;
     border-bottom: 1px solid #f0f0f0;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
 }
 
 .sidebar-logo {
@@ -66,6 +75,7 @@
     justify-content: center;
     align-items: center;
     transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
 }
 
 .sidebar-close:hover {
@@ -88,6 +98,8 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Sidebar Navigation */
@@ -111,6 +123,7 @@
     padding: 12px 15px;
     position: relative;
     border-radius: 4px;
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
 }
 
 .sidebar-nav a::before {
@@ -154,6 +167,7 @@
     box-shadow: 0 5px 15px rgba(241, 120, 182, 0.3);
     position: relative;
     overflow: hidden;
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
 }
 
 .sidebar-btn:hover,
@@ -194,45 +208,43 @@
     text-align: center;
     font-size: 14px;
     color: #777;
-    transform: translateY(20px);
-    opacity: 0;
-    transition: transform 0.4s ease, opacity 0.4s ease;
+    margin-top: auto;
 }
 
-.mobile-sidebar.active .sidebar-footer {
-    transform: translateY(0);
-    opacity: 1;
-    transition-delay: 0.5s;
+.sidebar-footer p {
+    margin-bottom: 10px;
 }
 
-/* Social Links */
+/* Social Media Icons */
 .sidebar-social {
     display: flex;
     justify-content: center;
-    padding: 20px;
-    border-top: 1px solid #f0f0f0;
+    gap: 15px;
+    margin-top: 10px;
 }
 
 .sidebar-social a {
-    color: #666;
-    font-size: 18px;
-    margin: 0 10px;
-    transition: all 0.2s ease;
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f9f9f9;
+    color: var(--primary-color);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .sidebar-social a:hover, 
 .sidebar-social a:focus {
-    color: #F178B6;
-    background: rgba(241, 120, 182, 0.1);
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-3px);
 }
 
-/* Sidebar Overlay */
+/* Overlay */
 .sidebar-overlay {
     position: fixed;
     top: 0;
@@ -240,11 +252,12 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
-    will-change: opacity; /* Performance optimization */
+    z-index: 999;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
 }
 
 .sidebar-overlay.active {
@@ -254,29 +267,28 @@
 
 /* Menu Toggle Button */
 .menu-toggle {
-    width: 44px;
-    height: 44px;
+    background: transparent;
+    border: none;
     cursor: pointer;
-    display: flex;
-    justify-content: center;
+    width: 40px;
+    height: 40px;
+    display: none;
     align-items: center;
-    padding: 8px;
-    background: #f178b6;
-    border: 2px solid rgba(255, 255, 255, 0.8);
-    margin-right: 0;
+    justify-content: center;
     position: relative;
+    z-index: 100;
     border-radius: 50%;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .menu-toggle:hover {
-    background: #e06aa5;
-    transform: scale(1.05);
+    background-color: rgba(241, 120, 182, 0.1);
 }
 
 .menu-toggle i {
-    color: white;
-    font-size: 20px;
+    font-size: 22px;
+    color: #333;
     transition: transform 0.3s ease;
 }
 
@@ -286,134 +298,156 @@
 
 /* Animations */
 @keyframes slideIn {
-    0% {
-        transform: translateX(30px);
-        opacity: 0;
+    from {
+        transform: translateX(100%);
     }
-    100% {
+    to {
         transform: translateX(0);
-        opacity: 1;
     }
 }
 
 @keyframes fadeIn {
-    0% {
+    from {
         opacity: 0;
     }
-    100% {
+    to {
         opacity: 1;
     }
 }
 
 @keyframes scaleIn {
-    0% {
-        transform: scale(0);
+    from {
+        transform: scale(0.95);
+        opacity: 0;
     }
-    100% {
+    to {
         transform: scale(1);
+        opacity: 1;
     }
 }
 
-/* Mobile-specific enhancements */
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
-    /* Navigation improvements */
+    .menu-toggle {
+        display: flex;
+    }
+    
+    .mobile-sidebar {
+        width: 85%;
+        max-width: 320px;
+    }
+    
+    .sidebar-nav li {
+        margin-bottom: 5px;
+    }
+    
+    .sidebar-nav a {
+        padding: 15px;
+        font-size: 16px;
+    }
+    
+    .nav-container {
+        padding: 15px 0;
+    }
+    
     .nav-links {
         display: none;
     }
     
     .menu-toggle {
-        display: flex !important;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        display: flex;
     }
     
     .nav-actions {
-        display: flex !important;
-        margin-right: 10px !important;
-        align-items: center;
-        justify-content: flex-end;
-    }
-    
-    .nav-container {
-        padding: 10px 0;
-    }
-    
-    /* Sidebar touch improvements */
-    .sidebar-nav a:active {
-        background-color: rgba(241, 120, 182, 0.1);
-    }
-    
-    /* Scrollbar styling */
-    .mobile-sidebar {
-        scrollbar-width: thin;
-        scrollbar-color: rgba(241, 120, 182, 0.3) transparent;
-        padding-bottom: 20px; /* Add space at bottom */
-    }
-    
-    .mobile-sidebar::-webkit-scrollbar {
-        width: 4px;
-    }
-    
-    .mobile-sidebar::-webkit-scrollbar-track {
-        background: transparent;
-    }
-    
-    .mobile-sidebar::-webkit-scrollbar-thumb {
-        background: rgba(241, 120, 182, 0.3);
-        border-radius: 4px;
-    }
-    
-    /* Improve pull-to-refresh experience */
-    body.nav-open {
-        overflow: hidden;
-        touch-action: none; /* Prevent scroll bounce on iOS */
-        position: fixed;
-        width: 100%;
-        height: 100%;
-    }
-    
-    /* Improve touch targets */
-    .sidebar-nav a, 
-    .sidebar-btn, 
-    .sidebar-close, 
-    .sidebar-social a {
-        min-height: 44px;
         display: flex;
         align-items: center;
     }
-}
-
-/* Remove conflicting ripple styles */
-.sidebar-nav a::after, .sidebar-btn::after {
-    content: none;
-}
-
-@keyframes ripple {
-    0% {
-        transform: scale(0, 0);
-        opacity: 0.5;
-    }
-    100% {
-        transform: scale(100, 100);
-        opacity: 0;
-    }
-}
-
-.sidebar-nav a:active::after, .sidebar-btn:active::after {
-    animation: none;
-}
-
-/* Add haptic feedback hint */
-@media (hover: none) {
-    .sidebar-nav a:active, .sidebar-btn:active, .sidebar-social a:active {
+    
+    .sidebar-nav a:active {
+        background-color: rgba(241, 120, 182, 0.1);
+        transform: scale(0.98);
         transition: all 0.1s ease;
     }
 }
 
-/* Improve sidebar accessibility focus states */
-.sidebar-nav a:focus-visible, 
-.sidebar-btn:focus-visible,
-.sidebar-social a:focus-visible,
-.sidebar-close:focus-visible {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 3px;
+/* Prevent body scroll when menu is open */
+body.nav-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+/* Touch devices optimizations */
+@media (hover: none) {
+    .sidebar-nav a:active, .sidebar-btn:active, .sidebar-social a:active {
+        background-color: rgba(241, 120, 182, 0.15) !important;
+        transform: scale(0.98);
+        transition: all 0.1s ease;
+    }
+    
+    .sidebar-content {
+        padding-bottom: 100px; /* Extra padding for comfortable scrolling */
+    }
+    
+    .sidebar-nav a, .sidebar-btn, .sidebar-social a {
+        padding: 15px; /* Larger touch targets */
+    }
+}
+
+/* Landscape orientation fixes */
+@media (max-width: 768px) and (orientation: landscape) {
+    .mobile-sidebar {
+        padding: 15px 0;
+    }
+    
+    .sidebar-nav a {
+        padding: 10px 15px;
+    }
+    
+    .sidebar-header {
+        padding: 15px;
+    }
+}
+
+/* Scrollbar styling */
+.mobile-sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.mobile-sidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.mobile-sidebar::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 10px;
+}
+
+.mobile-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #ccc;
+}
+
+/* Main nav styles for mobile */
+@media (max-width: 768px) {
+    .logo {
+        font-size: 20px;
+    }
+    
+    .nav-links a {
+        font-size: 14px;
+        padding: 5px 10px;
+    }
+    
+    .btn-sm {
+        padding: 8px 15px;
+        font-size: 13px;
+    }
+}
+
+/* Fix input zoom on mobile */
+@media screen and (max-width: 768px) {
+    input, textarea, select, button {
+        font-size: 16px; /* Prevents zoom on focus in iOS */
+    }
 } 

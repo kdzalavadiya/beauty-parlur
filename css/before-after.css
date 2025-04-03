@@ -1,0 +1,278 @@
+/**
+ * Before & After Slider Component Styles
+ * For New Real Bridal Studio
+ */
+
+.before-after-section {
+    padding: 80px 0;
+    background: linear-gradient(to bottom, #fff 0%, #fff5f8 100%);
+    overflow: hidden;
+}
+
+.before-after-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    margin-top: 40px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.before-after-container {
+    position: relative;
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    user-select: none;
+    touch-action: none;
+    aspect-ratio: 3/2;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Before and After Images */
+.before-img,
+.after-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    will-change: clip-path;
+}
+
+.before-img img,
+.after-img img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    display: block;
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
+/* Initially clip the after image */
+.after-img {
+    clip-path: inset(0% 0% 0% 50%);
+    -webkit-clip-path: inset(0% 0% 0% 50%);
+}
+
+/* Slider control */
+.before-after-slider {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    cursor: ew-resize;
+    z-index: 10;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    will-change: left;
+    touch-action: none;
+}
+
+.before-after-slider:focus {
+    background-color: #f178b6;
+}
+
+.slider-handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background-color: white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+    z-index: 11;
+}
+
+.slider-handle .handle-line {
+    position: relative;
+    width: 2px;
+    height: 20px;
+    background-color: #666;
+}
+
+.slider-handle .handle-line::before,
+.slider-handle .handle-line::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 2px;
+    background-color: #666;
+}
+
+.slider-handle .handle-line::before {
+    top: 4px;
+    left: -4px;
+    transform: rotate(-45deg);
+}
+
+.slider-handle .handle-line::after {
+    top: 4px;
+    left: -4px;
+    transform: rotate(45deg);
+}
+
+.slider-handle::before {
+    content: '';
+    position: absolute;
+    bottom: 1px;
+    left: 1px;
+    right: 1px;
+    top: 1px;
+    border-radius: 50%;
+    border: 2px solid #f178b6;
+}
+
+/* Labels */
+.before-label,
+.after-label {
+    position: absolute;
+    top: 20px;
+    padding: 5px 15px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 20px;
+    z-index: 5;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+.before-label {
+    left: 20px;
+    background-color: rgba(33, 33, 33, 0.7);
+}
+
+.after-label {
+    right: 20px;
+    background-color: rgba(241, 120, 182, 0.9);
+}
+
+/* Active state for dragging */
+.before-after-container.active .slider-handle,
+.before-after-slider.active .slider-handle {
+    transform: translate(-50%, -50%) scale(1.2);
+    background-color: #fce4ef;
+}
+
+/* Hover state */
+.before-after-container:hover .slider-handle {
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Apply an initial animation */
+@keyframes slideReveal {
+    0% {
+        left: 0%;
+        clip-path: inset(0% 0% 0% 100%);
+        -webkit-clip-path: inset(0% 0% 0% 100%);
+    }
+    100% {
+        left: 50%;
+        clip-path: inset(0% 0% 0% 50%);
+        -webkit-clip-path: inset(0% 0% 0% 50%);
+    }
+}
+
+.before-after-container.init-animation .before-after-slider {
+    animation: slideReveal 1.5s ease-in-out forwards;
+}
+
+.before-after-container.init-animation .after-img {
+    animation: slideReveal 1.5s ease-in-out forwards;
+}
+
+/* Accessibility - focus states */
+.before-after-slider:focus-visible {
+    outline: 2px solid #f178b6;
+    outline-offset: 2px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .before-after-grid {
+        max-width: 90%;
+        gap: 30px;
+    }
+    
+    .slider-handle {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .before-label,
+    .after-label {
+        font-size: 12px;
+        padding: 4px 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .before-after-grid {
+        max-width: 100%;
+    }
+    
+    .slider-handle {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .before-label,
+    .after-label {
+        top: 10px;
+    }
+    
+    .before-label {
+        left: 10px;
+    }
+    
+    .after-label {
+        right: 10px;
+    }
+}
+
+/* Better touch support */
+@media (pointer: coarse) {
+    .slider-handle {
+        width: 44px;
+        height: 44px;
+    }
+    
+    .before-after-slider {
+        width: 6px;
+    }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .slider-handle {
+        transition: none;
+    }
+    
+    .before-after-slider,
+    .after-img {
+        transition: none !important;
+    }
+    
+    .before-after-container.init-animation .before-after-slider,
+    .before-after-container.init-animation .after-img {
+        animation: none !important;
+        left: 50%;
+        clip-path: inset(0% 0% 0% 50%);
+        -webkit-clip-path: inset(0% 0% 0% 50%);
+    }
+} 

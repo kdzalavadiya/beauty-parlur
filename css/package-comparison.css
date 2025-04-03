@@ -1,0 +1,377 @@
+/* Package Comparison Tool Styles */
+.package-comparison {
+    padding: 80px 0;
+    background-color: #f9f9f9;
+    position: relative;
+}
+
+.package-comparison::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../images/pattern.png');
+    background-repeat: repeat;
+    background-size: 200px;
+    opacity: 0.05;
+    z-index: 0;
+}
+
+.package-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.package-filters {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background-color: white;
+    border: 1px solid #ddd;
+    color: #666;
+    padding: 10px 20px;
+    border-radius: 30px;
+    margin: 0 10px 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.filter-btn.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.package-grid {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.package-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    width: 300px;
+    transition: all 0.3s ease;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.package-card.hidden {
+    display: none;
+}
+
+.package-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.package-header {
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.package-standard .package-header {
+    background-color: #f3f3f3;
+}
+
+.package-premium .package-header {
+    background: linear-gradient(135deg, #f7a7cf 0%, #f178b6 100%);
+    color: white;
+}
+
+.package-deluxe .package-header {
+    background: linear-gradient(135deg, #965cd1 0%, #7742af 100%);
+    color: white;
+}
+
+.package-name {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.package-price {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.package-price-suffix {
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+.package-subtext {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.package-ribbon {
+    position: absolute;
+    top: 15px;
+    right: -30px;
+    background-color: #2ecc71;
+    color: white;
+    padding: 5px 30px;
+    font-size: 12px;
+    transform: rotate(45deg);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.package-content {
+    padding: 20px;
+}
+
+.package-description {
+    margin-bottom: 20px;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.package-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.feature-item i {
+    color: #2ecc71;
+    margin-right: 10px;
+    flex-shrink: 0;
+    margin-top: 3px;
+}
+
+.feature-item.not-included i {
+    color: #e74c3c;
+}
+
+.feature-item.not-included span {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+.package-footer {
+    padding: 0 20px 20px;
+    text-align: center;
+}
+
+.package-btn {
+    width: 100%;
+    display: block;
+}
+
+.package-standard .package-btn {
+    background-color: #95a5a6;
+}
+
+.package-standard .package-btn:hover {
+    background-color: #7f8c8d;
+}
+
+.package-premium .package-btn {
+    background-color: var(--primary-color);
+}
+
+.package-premium .package-btn:hover {
+    background-color: var(--secondary-color);
+}
+
+.package-deluxe .package-btn {
+    background-color: #7742af;
+}
+
+.package-deluxe .package-btn:hover {
+    background-color: #965cd1;
+}
+
+.package-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.toggle-label {
+    margin: 0 10px;
+    font-size: 16px;
+    color: #666;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: var(--primary-color);
+}
+
+input:focus + .toggle-slider {
+    box-shadow: 0 0 1px var(--primary-color);
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(30px);
+}
+
+/* Comparison View */
+.package-comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    margin-top: 30px;
+    background-color: white;
+    display: none;
+}
+
+.package-comparison-table.active {
+    display: table;
+}
+
+.package-comparison-table th,
+.package-comparison-table td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.package-comparison-table th {
+    background-color: #f9f9f9;
+    font-weight: 600;
+}
+
+.package-comparison-table th:first-child,
+.package-comparison-table td:first-child {
+    text-align: left;
+    width: 30%;
+}
+
+.package-comparison-table tr:last-child td {
+    border-bottom: none;
+}
+
+.package-comparison-table .check-icon {
+    color: #2ecc71;
+    font-size: 18px;
+}
+
+.package-comparison-table .times-icon {
+    color: #e74c3c;
+    font-size: 18px;
+}
+
+.package-comparison-table .highlighted {
+    background-color: rgba(var(--primary-color-rgb), 0.1);
+}
+
+/* Cards view is default, grid-view is shown when active */
+.grid-view {
+    display: none;
+}
+
+.grid-view.active {
+    display: flex;
+}
+
+.card-view {
+    display: flex;
+}
+
+.card-view.hidden {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .package-filters {
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding-bottom: 10px;
+    }
+    
+    .filter-btn {
+        margin: 0 5px 5px;
+        padding: 8px 15px;
+        flex-shrink: 0;
+    }
+    
+    .package-card {
+        width: 100%;
+        max-width: 350px;
+    }
+    
+    .package-comparison-table {
+        font-size: 14px;
+    }
+    
+    .package-comparison-table th,
+    .package-comparison-table td {
+        padding: 10px 5px;
+    }
+    
+    .package-comparison-table th:first-child,
+    .package-comparison-table td:first-child {
+        width: 40%;
+    }
+} 

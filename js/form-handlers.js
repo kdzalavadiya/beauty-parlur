@@ -15,18 +15,36 @@
      * Initialize Contact Form
      */
     function initContactForm() {
-        const contactForm = document.getElementById('contact-form');
-        if (!contactForm) return;
+        const contactForm = document.getElementById('contactForm');
+        if (!contactForm) {
+            console.warn('Contact form not found');
+            return;
+        }
         
         // Enhanced form validation
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Check form validity
-            if (!contactForm.checkValidity()) {
-                contactForm.reportValidity();
+            // Clear previous validation messages
+            clearFormErrors(contactForm);
+            
+            // Validate each field
+            let isValid = validateForm(contactForm);
+            
+            if (!isValid) {
+                // Focus the first invalid field
+                const firstInvalidField = contactForm.querySelector('.error');
+                if (firstInvalidField) {
+                    firstInvalidField.focus();
+                }
                 return;
             }
+            
+            // Show loading state
+            const submitBtn = contactForm.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            submitBtn.disabled = true;
             
             // Get form data
             const formData = new FormData(contactForm);
@@ -36,21 +54,29 @@
                 formEntries[key] = value;
             }
             
-            // Normally would send to server here
-            // For demo, we'll show success message
-            showFormSuccess('Thank you for your message!', 'We will get back to you shortly.');
-            
-            // Reset form
-            contactForm.reset();
+            // Simulate sending to server (replace with actual API call)
+            setTimeout(() => {
+                // Reset form
+                contactForm.reset();
+                
+                // Reset button
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+                
+                // Show success message
+                showFormSuccess('Thank you for your message!', 'We will get back to you shortly.');
+            }, 1500);
         });
         
         // Add live validation feedback
         const inputs = contactForm.querySelectorAll('input, textarea, select');
         inputs.forEach(input => {
+            // Validate on blur (when user leaves the field)
             input.addEventListener('blur', function() {
                 validateField(this);
             });
             
+            // Validate on input (as user types) if field has an error
             input.addEventListener('input', function() {
                 if (this.classList.contains('error')) {
                     validateField(this);
@@ -63,62 +89,51 @@
      * Initialize Booking Form with enhanced features
      */
     function initBookingForm() {
-        const bookingFormContainer = document.getElementById('booking-form-container');
         const bookingForm = document.getElementById('booking-form');
-        const openBookingBtn = document.getElementById('open-booking-form');
-        const closeBookingBtn = document.getElementById('close-booking-form');
-        const cancelBookingBtn = document.getElementById('cancel-booking-form');
+        const openBookingBtn = document.querySelector('a[href="#booking"]');
         
-        if (!bookingForm || !bookingFormContainer) return;
+        if (!bookingForm) {
+            console.warn('Booking form not found');
+            return;
+        }
         
-        // Open booking form
+        // Smooth scroll to booking section when book now button is clicked
         if (openBookingBtn) {
             openBookingBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                openBookingForm();
+                const bookingSection = document.getElementById('booking');
+                if (bookingSection) {
+                    e.preventDefault();
+                    bookingSection.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Focus the first input field after scrolling
+                    setTimeout(() => {
+                        const firstInput = bookingForm.querySelector('input, select, textarea');
+                        if (firstInput) {
+                            firstInput.focus();
+                        }
+                    }, 800);
+                }
             });
         }
-        
-        // Close booking form
-        function closeBookingFormFunc() {
-            bookingFormContainer.classList.remove('active');
-            
-            setTimeout(() => {
-                bookingFormContainer.style.display = 'none';
-                document.body.style.overflow = '';
-            }, 300);
-        }
-        
-        if (closeBookingBtn) {
-            closeBookingBtn.addEventListener('click', closeBookingFormFunc);
-        }
-        
-        if (cancelBookingBtn) {
-            cancelBookingBtn.addEventListener('click', closeBookingFormFunc);
-        }
-        
-        // Close on escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && bookingFormContainer.style.display === 'flex') {
-                closeBookingFormFunc();
-            }
-        });
-        
-        // Close on click outside
-        bookingFormContainer.addEventListener('click', function(e) {
-            if (e.target === bookingFormContainer) {
-                closeBookingFormFunc();
-            }
-        });
-        
-        // Prevent form close when clicking inside the form
-        bookingFormContainer.querySelector('.form-success-content').addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
         
         // Submit booking form
         bookingForm.addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            // Clear previous validation messages
+            clearFormErrors(bookingForm);
+            
+            // Validate each field
+            let isValid = validateForm(bookingForm);
+            
+            if (!isValid) {
+                // Focus the first invalid field
+                const firstInvalidField = bookingForm.querySelector('.error');
+                if (firstInvalidField) {
+                    firstInvalidField.focus();
+                }
+                return;
+            }
             
             // Show loading state
             const submitBtn = bookingForm.querySelector('button[type="submit"]');
@@ -131,31 +146,24 @@
                 // Reset form
                 bookingForm.reset();
                 
-                // Show success message
-                const successMessage = document.createElement('div');
-                successMessage.className = 'form-success-message';
-                successMessage.innerHTML = `
-                    <i class="fas fa-check-circle"></i>
-                    <h4>Booking Request Sent!</h4>
-                    <p>We'll get back to you within 24 hours to confirm your appointment.</p>
-                `;
+                // Reset button
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
                 
-                const formContent = bookingForm.parentElement;
-                formContent.innerHTML = '';
-                formContent.appendChild(successMessage);
-
-                // Close form after 3 seconds
-                setTimeout(closeBookingFormFunc, 3000);
+                // Show success message
+                showFormSuccess('Booking Request Sent!', 'We\'ll get back to you within 24 hours to confirm your appointment.');
             }, 1500);
         });
         
         // Add live validation feedback
         const inputs = bookingForm.querySelectorAll('input, textarea, select');
         inputs.forEach(input => {
+            // Validate on blur (when user leaves the field)
             input.addEventListener('blur', function() {
                 validateField(this);
             });
             
+            // Validate on input (as user types) if field has an error
             input.addEventListener('input', function() {
                 if (this.classList.contains('error')) {
                     validateField(this);
@@ -254,211 +262,220 @@
     }
 
     /**
-     * Enhanced Form Validation
+     * Validate all fields in a form
+     * @param {HTMLFormElement} form - The form to validate
+     * @returns {boolean} - True if form is valid, false otherwise
      */
     function validateForm(form) {
-        const formElements = form.elements;
         let isValid = true;
-        let firstError = null;
+        const inputs = form.querySelectorAll('input, textarea, select');
         
-        for (let i = 0; i < formElements.length; i++) {
-            const element = formElements[i];
-            
-            // Skip buttons and non-required elements
-            if (element.type === 'submit' || element.type === 'button' || !element.hasAttribute('required')) {
-                continue;
+        inputs.forEach(input => {
+            // Skip hidden or disabled fields
+            if (input.type === 'hidden' || input.disabled) {
+                return;
             }
             
-            // Validate the field
-            const fieldValid = validateField(element);
-            
-            // Track first error for focus
-            if (!fieldValid && !firstError) {
-                firstError = element;
+            if (!validateField(input)) {
+                isValid = false;
             }
-            
-            isValid = isValid && fieldValid;
-        }
-        
-        // Focus first error
-        if (firstError) {
-            firstError.focus();
-        }
+        });
         
         return isValid;
     }
-
+    
     /**
-     * Validate individual field with specific error messages
+     * Validate a single field
+     * @param {HTMLElement} field - The field to validate
+     * @returns {boolean} - True if field is valid, false otherwise
      */
     function validateField(field) {
-        // Remove existing error messages
-        const existingError = field.parentNode.querySelector('.error-message');
-        if (existingError) {
-            existingError.remove();
-        }
-        
-        field.classList.remove('error');
-        
-        let isValid = true;
-        let errorMessage = '';
-        
-        // Skip non-required empty fields
-        if (!field.hasAttribute('required') && field.value.trim() === '') {
+        // Skip hidden or disabled fields
+        if (field.type === 'hidden' || field.disabled) {
             return true;
         }
         
+        // Get field type and value
+        const fieldType = field.type;
+        const fieldValue = field.value.trim();
+        const fieldName = field.name;
+        const isRequired = field.hasAttribute('required');
+        
+        // Skip validation if field is not required and is empty
+        if (!isRequired && fieldValue === '') {
+            removeError(field);
+            return true;
+        }
+        
+        // Check if empty but required
+        if (isRequired && fieldValue === '') {
+            setError(field, 'This field is required');
+            return false;
+        }
+        
         // Validate based on field type
-        switch (field.type) {
+        switch (fieldType) {
             case 'email':
-                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (field.value.trim() === '') {
-                    isValid = false;
-                    errorMessage = 'Email address is required';
-                } else if (!emailPattern.test(field.value)) {
-                    isValid = false;
-                    errorMessage = 'Please enter a valid email address';
+                // Simple email validation regex
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(fieldValue)) {
+                    setError(field, 'Please enter a valid email address');
+                    return false;
                 }
                 break;
                 
             case 'tel':
-                const phonePattern = /^\+?[0-9\s\-()]{8,20}$/;
-                if (field.value.trim() === '') {
-                    isValid = false;
-                    errorMessage = 'Phone number is required';
-                } else if (!phonePattern.test(field.value)) {
-                    isValid = false;
-                    errorMessage = 'Please enter a valid phone number';
+                // Phone validation (at least 10 digits)
+                const phoneRegex = /^[\d\+\-\(\) ]{10,}$/;
+                if (!phoneRegex.test(fieldValue)) {
+                    setError(field, 'Please enter a valid phone number');
+                    return false;
                 }
                 break;
                 
             case 'date':
-                if (field.value === '') {
-                    isValid = false;
-                    errorMessage = 'Please select a date';
-                } else {
-                    const selectedDate = new Date(field.value);
-                    const currentDate = new Date();
-                    currentDate.setHours(0, 0, 0, 0);
+                // Check if date is in past
+                if (field.hasAttribute('min')) {
+                    const minDate = new Date(field.getAttribute('min'));
+                    const selectedDate = new Date(fieldValue);
                     
-                    if (selectedDate < currentDate) {
-                        isValid = false;
-                        errorMessage = 'Please select a future date';
+                    if (selectedDate < minDate) {
+                        setError(field, 'Please select a future date');
+                        return false;
                     }
                 }
                 break;
                 
             case 'select-one':
-                if (field.value === '') {
-                    isValid = false;
-                    errorMessage = 'Please select an option';
+                // Check if a valid option is selected
+                if (field.selectedIndex === 0 && isRequired) {
+                    setError(field, 'Please select an option');
+                    return false;
                 }
                 break;
                 
-            default:
-                if (field.value.trim() === '') {
-                    isValid = false;
-                    errorMessage = field.name.charAt(0).toUpperCase() + field.name.slice(1) + ' is required';
+            case 'textarea':
+                // Check minimum length
+                if (fieldValue.length < 10 && isRequired) {
+                    setError(field, 'Please enter at least 10 characters');
+                    return false;
                 }
+                break;
         }
         
-        // Add error class and message if invalid
-        if (!isValid) {
-            field.classList.add('error');
-            
-            // Create error message element
-            const errorEl = document.createElement('div');
-            errorEl.className = 'error-message';
-            errorEl.textContent = errorMessage;
-            field.parentNode.appendChild(errorEl);
-            
-            // Announce error for screen readers
-            field.setAttribute('aria-invalid', 'true');
-            field.setAttribute('aria-describedby', field.id + '-error');
-            errorEl.id = field.id + '-error';
-            errorEl.setAttribute('role', 'alert');
-        } else {
-            field.setAttribute('aria-invalid', 'false');
-            field.removeAttribute('aria-describedby');
-        }
-        
-        return isValid;
+        // If we reach here, field is valid
+        removeError(field);
+        return true;
     }
-
+    
     /**
-     * Clear all form errors
+     * Set error state and message for a field
+     * @param {HTMLElement} field - The field with error
+     * @param {string} message - Error message to display
+     */
+    function setError(field, message) {
+        // Remove any existing error
+        removeError(field);
+        
+        // Add error class to field
+        field.classList.add('error');
+        
+        // Create error message element
+        const errorElement = document.createElement('div');
+        errorElement.className = 'error-message';
+        errorElement.innerText = message;
+        
+        // Add error message after the field
+        field.parentNode.appendChild(errorElement);
+        
+        // Add aria-invalid attribute for accessibility
+        field.setAttribute('aria-invalid', 'true');
+        
+        // Set aria-describedby to error message
+        const errorId = `error-${field.name || field.id}`;
+        errorElement.id = errorId;
+        field.setAttribute('aria-describedby', errorId);
+    }
+    
+    /**
+     * Remove error state and message from a field
+     * @param {HTMLElement} field - The field to remove error from
+     */
+    function removeError(field) {
+        // Remove error class
+        field.classList.remove('error');
+        
+        // Remove error message if exists
+        const parent = field.parentNode;
+        const errorElement = parent.querySelector('.error-message');
+        if (errorElement) {
+            parent.removeChild(errorElement);
+        }
+        
+        // Remove aria attributes
+        field.removeAttribute('aria-invalid');
+        field.removeAttribute('aria-describedby');
+    }
+    
+    /**
+     * Clear all error messages from a form
+     * @param {HTMLFormElement} form - The form to clear errors from
      */
     function clearFormErrors(form) {
+        // Remove all error messages
         const errorMessages = form.querySelectorAll('.error-message');
-        errorMessages.forEach(error => error.remove());
+        errorMessages.forEach(message => {
+            message.parentNode.removeChild(message);
+        });
         
+        // Remove error class from all fields
         const errorFields = form.querySelectorAll('.error');
         errorFields.forEach(field => {
             field.classList.remove('error');
-            field.setAttribute('aria-invalid', 'false');
+            field.removeAttribute('aria-invalid');
             field.removeAttribute('aria-describedby');
         });
     }
-
+    
     /**
-     * Show success message
+     * Show success message for form submission
+     * @param {string} title - Success message title
+     * @param {string} message - Success message text
      */
     function showFormSuccess(title, message) {
-        // Create form success message
+        // Create success message container
         const successContainer = document.createElement('div');
         successContainer.className = 'form-success';
         
-        const successContent = document.createElement('div');
-        successContent.className = 'form-success-content';
-        
-        // Add success icon
-        const icon = document.createElement('i');
-        icon.className = 'fas fa-check-circle';
-        
-        // Add title and message
-        const titleElement = document.createElement('h3');
-        titleElement.textContent = title;
-        
-        const messageElement = document.createElement('p');
-        messageElement.textContent = message;
-        
-        // Add close button
-        const closeButton = document.createElement('button');
-        closeButton.className = 'close-success';
-        closeButton.textContent = 'Close';
-        
-        // Assemble elements
-        successContent.appendChild(icon);
-        successContent.appendChild(titleElement);
-        successContent.appendChild(messageElement);
-        successContent.appendChild(closeButton);
-        successContainer.appendChild(successContent);
+        // Create success message content
+        successContainer.innerHTML = `
+            <div class="form-success-content">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>${title}</h3>
+                <p>${message}</p>
+            </div>
+        `;
         
         // Add to page
         document.body.appendChild(successContainer);
         
-        // Force reflow to enable animation
-        successContainer.offsetHeight;
+        // Add active class after a brief delay (for animation)
+        setTimeout(() => {
+            successContainer.classList.add('active');
+        }, 10);
         
-        // Animate in
-        successContainer.style.opacity = '1';
-        
-        // Close on button click
-        closeButton.addEventListener('click', function() {
-            successContainer.style.opacity = '0';
+        // Remove after 3 seconds
+        setTimeout(() => {
+            successContainer.classList.remove('active');
+            
+            // Remove from DOM after animation completes
             setTimeout(() => {
-                document.body.removeChild(successContainer);
-            }, 300);
-        });
-        
-        // Also close on background click
-        successContainer.addEventListener('click', function(e) {
-            if (e.target === successContainer) {
-                successContainer.style.opacity = '0';
-                setTimeout(() => {
-                    document.body.removeChild(successContainer);
-                }, 300);
-            }
-        });
+                if (successContainer.parentNode) {
+                    successContainer.parentNode.removeChild(successContainer);
+                }
+            }, 500);
+        }, 3000);
     }
 })(); 
