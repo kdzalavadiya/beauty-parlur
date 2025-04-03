@@ -294,7 +294,7 @@
 
 .testimonial-author p {
     font-size: 14px;
-    color: #888;
+    color: var(--text-secondary-color);
     font-style: italic;
 }
 

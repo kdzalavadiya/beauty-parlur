@@ -46,26 +46,70 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
             submitBtn.disabled = true;
             
-            // Get form data
+            // Get form data and format it
             const formData = new FormData(contactForm);
             const formEntries = {};
+            const formattedDate = new Date().toLocaleString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                dateStyle: 'full',
+                timeStyle: 'long'
+            });
+
+            // Format data for WhatsApp
+            let whatsappMessage = `🌟 *New Bridal Inquiry*\n\n`;
+            whatsappMessage += `📅 *Date:* ${formattedDate}\n\n`;
+            whatsappMessage += `👤 *Name:* ${formData.get('name')}\n`;
+            whatsappMessage += `📧 *Email:* ${formData.get('email')}\n`;
+            whatsappMessage += `💫 *Service:* ${formData.get('service')}\n\n`;
+            whatsappMessage += `💭 *Message:*\n${formData.get('message')}\n\n`;
+            whatsappMessage += `📱 *Sent via Website Contact Form*`;
+
+            // WhatsApp business number
+            const whatsappNumber = '919925381942';
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+            
+            // Format field labels for better readability
+            const fieldLabels = {
+                'name': 'Full Name',
+                'email': 'Email Address',
+                'service': 'Service Interest',
+                'message': 'Message'
+            };
             
             for (let [key, value] of formData.entries()) {
-                formEntries[key] = value;
+                formEntries[key] = value.trim();
             }
             
-            // Simulate sending to server (replace with actual API call)
+            // Prepare WhatsApp message with better formatting
+            let message = `🌟 *New Bridal Inquiry*\n`;
+            message += `📅 *Submitted On:* ${formattedDate}\n\n`;
+            
+            for (let [key, value] of formData.entries()) {
+                const label = fieldLabels[key] || key;
+                message += `*${label}:*\n${value}\n\n`;
+            }
+            
+            // Add footer
+            message += `\n📍 *Submitted via Website Contact Form*`;
+            
+            // Create CSV-formatted data for Excel
+            const csvData = [
+                formattedDate,
+                ...Object.values(formEntries)
+            ].join(',');
+
+            // Reset form and button
+            contactForm.reset();
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+
+            // Show success message
+            showFormSuccess('Message sent!', 'Redirecting to WhatsApp...');
+
+            // Redirect to WhatsApp after a short delay
             setTimeout(() => {
-                // Reset form
-                contactForm.reset();
-                
-                // Reset button
-                submitBtn.innerHTML = originalBtnText;
-                submitBtn.disabled = false;
-                
-                // Show success message
-                showFormSuccess('Thank you for your message!', 'We will get back to you shortly.');
-            }, 1500);
+                window.open(whatsappUrl, '_blank');
+            }, 1000);
         });
         
         // Add live validation feedback
@@ -313,6 +357,41 @@
             return false;
         }
         
+        // Validate name field (minimum 3 characters, letters and spaces only)
+        if (fieldName === 'name' && fieldValue.length > 0) {
+            const nameRegex = /^[A-Za-z\s]{3,}$/;
+            if (!nameRegex.test(fieldValue)) {
+                setError(field, 'Please enter a valid name (minimum 3 letters)');
+                return false;
+            }
+        }
+
+        // Validate email field
+        if (fieldName === 'email' && fieldValue.length > 0) {
+            const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(fieldValue)) {
+                setError(field, 'Please enter a valid email address');
+                return false;
+            }
+        }
+
+        // Validate phone field (Indian phone number format)
+        if (fieldName === 'phone' && fieldValue.length > 0) {
+            const phoneRegex = /^[6-9]\d{9}$/;
+            if (!phoneRegex.test(fieldValue)) {
+                setError(field, 'Please enter a valid 10-digit mobile number');
+                return false;
+            }
+        }
+
+        // Validate message field (minimum 10 characters)
+        if (fieldName === 'message' && fieldValue.length > 0) {
+            if (fieldValue.length < 10) {
+                setError(field, 'Message must be at least 10 characters long');
+                return false;
+            }
+        }
+        
         // Validate based on field type
         switch (fieldType) {
             case 'email':
@@ -443,39 +522,44 @@
      * @param {string} message - Success message text
      */
     function showFormSuccess(title, message) {
-        // Create success message container
-        const successContainer = document.createElement('div');
-        successContainer.className = 'form-success';
-        
-        // Create success message content
-        successContainer.innerHTML = `
-            <div class="form-success-content">
-                <div class="success-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <h3>${title}</h3>
-                <p>${message}</p>
+        const successAlert = document.createElement('div');
+        successAlert.className = 'form-success-alert';
+        successAlert.innerHTML = `
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h4>${title}</h4>
+            <p>${message}</p>
+            <div class="success-actions">
+                <button class="copy-data-btn" onclick="copyFormData()">
+                    <i class="fas fa-copy"></i> Copy for Excel
+                </button>
             </div>
         `;
         
-        // Add to page
-        document.body.appendChild(successContainer);
+        document.body.appendChild(successAlert);
         
-        // Add active class after a brief delay (for animation)
-        setTimeout(() => {
-            successContainer.classList.add('active');
-        }, 10);
+        // Store form data in localStorage for copying
+        if (window.formDataForExcel) {
+            localStorage.setItem('lastFormData', window.formDataForExcel);
+        }
         
-        // Remove after 3 seconds
+        // Remove the alert after 8 seconds
         setTimeout(() => {
-            successContainer.classList.remove('active');
-            
-            // Remove from DOM after animation completes
-            setTimeout(() => {
-                if (successContainer.parentNode) {
-                    successContainer.parentNode.removeChild(successContainer);
-                }
-            }, 500);
-        }, 3000);
+            successAlert.remove();
+            localStorage.removeItem('lastFormData');
+        }, 8000);
     }
-})(); 
+
+    function copyFormData() {
+        const data = localStorage.getItem('lastFormData');
+        if (data) {
+            navigator.clipboard.writeText(data).then(() => {
+                alert('Data copied! You can now paste it into Excel.');
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy data. Please try again.');
+            });
+        }
+    }
+})();

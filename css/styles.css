@@ -1,3 +1,7 @@
+:root {
+    --text-secondary-color: #050505; /* Updated darker gray for secondary text */
+}
+
 /* Critical render path optimization */
 img {
     content-visibility: auto;
@@ -24,7 +28,7 @@ img {
     position: absolute;
     top: -40px;
     left: 0;
-    background: #f178b6;
+    background: #fafafa;
     color: white;
     padding: 8px 15px;
     z-index: 1050;
@@ -185,10 +189,11 @@ nav {
     list-style: none;
     margin: 0;
     padding: 0;
+    align-items: center;
 }
 
 .nav-links li {
-    margin-left: 25px;
+    margin-left: 30px;
 }
 
 .nav-links a {
@@ -224,7 +229,7 @@ nav {
 /* Buttons */
 .btn {
     display: inline-block;
-    padding: 12px 28px;
+    padding: 14px 32px;
     background-color: #f178b6;
     color: #fff;
     border-radius: 30px;
@@ -240,4 +245,48 @@ nav {
     padding: 8px 20px;
     font-size: 0.9rem;
     border-radius: 24px;
-} 
+}
+
+/* Style the Book Now button in the nav specifically */
+.nav-links .btn-sm {
+    padding: 8px 30px;
+}
+
+.nav-links .btn-sm:hover {
+    background-color: #e84d9e;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(241, 120, 182, 0.3);
+}
+
+.card-price {
+    color: var(--text-secondary-color);
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.testimonial-author p {
+    color: var(--text-secondary-color);
+    margin-bottom: 0;
+}
+
+.contact-item p {
+    margin: 0;
+    color: var(--text-secondary-color);
+}
+
+.footer-links a {
+    color: var(--text-secondary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-bottom p {
+    color:#f8f8f8;
+    margin: 0;
+}
+
+.form-success-message p {
+    font-size: 16px;
+    color: var(--text-secondary-color);
+    margin-bottom: 20px;
+}
