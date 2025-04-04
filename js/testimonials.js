@@ -16,8 +16,7 @@
         const testimonialsSection = document.querySelector('.testimonials-section');
         const testimonialsSlider = document.querySelector('.testimonials-slider');
         const testimonialSlides = document.querySelectorAll('.testimonial-slide');
-        const prevButton = document.querySelector('.testimonial-prev');
-        const nextButton = document.querySelector('.testimonial-next');
+       
         const dotsContainer = document.querySelector('.testimonial-dots');
         
         // Exit if elements don't exist
@@ -72,20 +71,7 @@
             updateSlides(true);
         }, 100);
         
-        // Add event listeners
-        if (prevButton && nextButton) {
-            prevButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                addRippleEffect(this);
-                slidePrev();
-            });
-            
-            nextButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                addRippleEffect(this);
-                slideNext();
-            });
-        }
+      
         
         // Add touch and drag events
         testimonialsSlider.addEventListener('touchstart', handleTouchStart, { passive: true });
