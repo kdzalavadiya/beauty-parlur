@@ -193,9 +193,6 @@
     box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.3), 0 6px 15px rgba(var(--primary-color-rgb), 0.3);
 }
 
-.testimonial-prev { margin-left: -10px; } /* Adjust positioning */
-.testimonial-next { margin-right: -10px; } /* Adjust positioning */
-
 /* Navigation Dots */
 .testimonial-dots {
     display: flex;
