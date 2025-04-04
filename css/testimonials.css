@@ -257,8 +257,7 @@
         left: 0;
         right: 0;
     }
-    .testimonial-prev { margin-left: 0; }
-    .testimonial-next { margin-right: 0; }
+   
 }
 
 @media (max-width: 768px) {
