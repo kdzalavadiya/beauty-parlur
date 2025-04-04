@@ -429,11 +429,16 @@ body.smooth-scrolling::after {
 
 @media (max-width: 576px) {
     .footer-top {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
     }
     
     .footer-about {
-        grid-column: span 1;
+        grid-column: span 2;
+    }
+
+    .footer-top > div:nth-child(4) {
+        grid-column: span 2;
     }
     
     .back-to-top {
