@@ -36,9 +36,6 @@
         let autoplayTimer = null;
         let touchStartX = 0;
         let touchEndX = 0;
-        let isDragging = false;
-        let dragStartX = 0;
-        let dragOffset = 0;
 
         // Add parallax effect elements to testimonial cards
         testimonialSlides.forEach(slide => {
@@ -77,10 +74,7 @@
         testimonialsSlider.addEventListener('touchstart', handleTouchStart, { passive: true });
         testimonialsSlider.addEventListener('touchend', handleTouchEnd, { passive: true });
         
-        // Add mouse drag for desktop
-        testimonialsSlider.addEventListener('mousedown', handleDragStart);
-        document.addEventListener('mousemove', handleDragMove);
-        document.addEventListener('mouseup', handleDragEnd);
+
         
         // Add keyboard navigation
         testimonialsSection.addEventListener('keydown', handleKeyboard);
@@ -137,26 +131,7 @@
             }
         }
         
-        /**
-         * Add ripple effect to buttons
-         */
-        function addRippleEffect(button) {
-            const ripple = document.createElement('span');
-            ripple.className = 'ripple-effect';
-            button.appendChild(ripple);
-            
-            // Position the ripple element
-            const rect = button.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            ripple.style.width = ripple.style.height = `${size}px`;
-            ripple.style.left = `${-size/2 + rect.width/2}px`;
-            ripple.style.top = `${-size/2 + rect.height/2}px`;
-            
-            // Remove ripple after animation completes
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
-        }
+
         
         /**
          * Create pagination dots
@@ -191,84 +166,7 @@
             });
         }
         
-        /**
-         * Handle drag start for mouse drag
-         */
-        function handleDragStart(e) {
-            if (isAnimating) return;
-            stopAutoplay();
-            
-            isDragging = true;
-            dragStartX = e.clientX;
-            testimonialsSlider.style.cursor = 'grabbing';
-            
-            // Prevent text selection during drag
-            e.preventDefault();
-        }
-        
-        /**
-         * Handle drag move for mouse drag
-         */
-        function handleDragMove(e) {
-            if (!isDragging) return;
-            
-            const dragCurrentX = e.clientX;
-            dragOffset = dragCurrentX - dragStartX;
-            
-            // Apply a resistance factor to make drag feel more natural
-            const resistance = 0.4;
-            const moveX = dragOffset * resistance;
-            
-            // Apply drag effect to slides
-            testimonialSlides.forEach((slide, i) => {
-                const isActive = i === currentSlide;
-                const isPrev = i === ((currentSlide - 1 + testimonialSlides.length) % testimonialSlides.length);
-                const isNext = i === ((currentSlide + 1) % testimonialSlides.length);
-                
-                if (isActive) {
-                    slide.style.transform = `translateX(${moveX}px) scale(1)`;
-                } else if (isPrev && dragOffset > 0) {
-                    const scale = 0.85 + Math.min(0.15, Math.abs(dragOffset) / 500);
-                    slide.style.transform = `translateX(${-220 + moveX}px) scale(${scale})`;
-                    slide.style.opacity = 0.5 + Math.min(0.5, Math.abs(dragOffset) / 500);
-                } else if (isNext && dragOffset < 0) {
-                    const scale = 0.85 + Math.min(0.15, Math.abs(dragOffset) / 500);
-                    slide.style.transform = `translateX(${220 + moveX}px) scale(${scale})`;
-                    slide.style.opacity = 0.5 + Math.min(0.5, Math.abs(dragOffset) / 500);
-                }
-            });
-        }
-        
-        /**
-         * Handle drag end for mouse drag
-         */
-        function handleDragEnd() {
-            if (!isDragging) return;
-            
-            isDragging = false;
-            testimonialsSlider.style.cursor = '';
-            
-            // Reset slide transforms
-            testimonialSlides.forEach(slide => {
-                slide.style.transform = '';
-                slide.style.opacity = '';
-            });
-            
-            // Determine if we should navigate based on drag distance
-            if (Math.abs(dragOffset) > 100) {
-                if (dragOffset > 0) {
-                    slidePrev();
-                } else {
-                    slideNext();
-                }
-            } else {
-                // Not enough drag distance, reset to current slide
-                updateSlides(true);
-            }
-            
-            dragOffset = 0;
-            startAutoplay();
-        }
+
         
         /**
          * Go to previous slide
@@ -481,4 +379,4 @@
             }
         }
     }
-})(); 
+})();
