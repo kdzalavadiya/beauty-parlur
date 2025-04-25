@@ -1,0 +1,604 @@
+/* Dashboard Styles */
+:root {
+    --primary-color: #f178b6;
+    --secondary-color: #e0609d;
+    --text-color: #333;
+    --light-text: #777;
+    --background: #fff;
+    --card-bg: #fff;
+    --border-color: #eee;
+    --danger-color: #ff4444;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    --transition: all 0.3s ease;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--text-color);
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+    background-color: var(--background);
+    box-shadow: var(--shadow-sm);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo a {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+/* User Menu */
+.user-menu {
+    position: relative;
+}
+
+.user-menu-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 15px;
+    border-radius: 30px;
+    transition: background-color 0.3s ease;
+}
+
+.user-menu-button:hover {
+    background-color: rgba(241, 120, 182, 0.1);
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.user-name {
+    font-weight: 500;
+}
+
+.user-menu-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--background);
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    min-width: 200px;
+    display: none;
+}
+
+.user-menu:hover .user-menu-dropdown {
+    display: block;
+}
+
+.user-menu-item {
+    display: block;
+    padding: 10px 20px;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.user-menu-item:hover {
+    background-color: rgba(241, 120, 182, 0.1);
+}
+
+.user-menu-item.logout {
+    color: var(--danger-color);
+}
+
+/* Dashboard Main Content */
+.dashboard-main {
+    padding: 40px 0;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 30px;
+}
+
+/* Welcome Section */
+.dashboard-welcome {
+    grid-column: span 12;
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+}
+
+.dashboard-welcome h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    margin: 0 0 10px 0;
+}
+
+.dashboard-welcome p {
+    color: var(--light-text);
+    margin: 0;
+}
+
+/* Quick Actions */
+.dashboard-actions {
+    grid-column: span 12;
+}
+
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.action-card {
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    text-decoration: none;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    transition: var(--transition);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+}
+
+.action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.action-card i {
+    font-size: 32px;
+    color: var(--primary-color);
+}
+
+.action-card span {
+    font-weight: 500;
+}
+
+/* Appointments Section */
+.dashboard-appointments {
+    grid-column: span 8;
+}
+
+.appointments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.appointment-card {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.appointment-date {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    min-width: 80px;
+}
+
+.appointment-date .day {
+    font-size: 24px;
+    font-weight: 600;
+    display: block;
+}
+
+.appointment-date .month {
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.appointment-details {
+    flex: 1;
+}
+
+.appointment-details h3 {
+    margin: 0 0 5px 0;
+}
+
+.appointment-details p {
+    margin: 5px 0;
+    color: var(--light-text);
+}
+
+.appointment-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Activity Section */
+.dashboard-activity {
+    grid-column: span 4;
+}
+
+.activity-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.activity-item {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    gap: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(241, 120, 182, 0.1);
+    color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.activity-content p {
+    margin: 0 0 5px 0;
+}
+
+.activity-time {
+    font-size: 12px;
+    color: var(--light-text);
+}
+
+/* Buttons */
+.btn {
+    padding: 8px 20px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline:hover {
+    background-color: rgba(241, 120, 182, 0.1);
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #ff3333;
+}
+
+/* Dashboard Footer */
+.dashboard-footer {
+    background-color: var(--background);
+    padding: 20px 0;
+    text-align: center;
+    color: var(--light-text);
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .dashboard-appointments,
+    .dashboard-activity {
+        grid-column: span 12;
+    }
+}
+
+@media (max-width: 768px) {
+    .appointment-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .appointment-actions {
+        justify-content: center;
+    }
+}
+
+/* Basic dashboard styling */
+body { font-family: sans-serif; padding: 20px; background-color: #f8f9fa; color: #333; }
+h1, h2 { color: #333; border-bottom: 2px solid #f178b6; padding-bottom: 10px; margin-bottom: 20px; }
+.section { margin-bottom: 30px; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+#logout-button { background-color: #dc3545; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; float: right; font-size: 0.9em; }
+#logout-button:hover { background-color: #c82333; }
+a.home-link { float: right; margin-right: 15px; color: #007bff; text-decoration: none; line-height: 35px; /* Align with button */ }
+a.home-link:hover { text-decoration: underline; }
+
+/* Table styling */
+table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 0.95em; }
+th { background-color: #e9ecef; font-weight: bold; }
+tr:nth-child(even) { background-color: #f8f9fa; }
+
+/* Card grid for offerings */
+.offering-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 15px; }
+.offering-card { background-color: #fff; border: 1px solid #eee; border-radius: 6px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.2s ease, box-shadow 0.2s ease; display: flex; flex-direction: column; }
+.offering-card:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
+.offering-card h4 { margin-top: 0; margin-bottom: 8px; color: #f178b6; }
+.offering-card p { margin-bottom: 5px; font-size: 0.9em; flex-grow: 1; /* Make description take available space */ }
+.offering-card .price { font-weight: bold; color: #555; margin-bottom: 10px; flex-grow: 0; }
+.offering-card .book-btn {
+    display: inline-block; padding: 6px 12px; background-color: #28a745; color: white; 
+    text-decoration: none; border-radius: 4px; font-size: 0.9em; margin-top: 10px; border: none; cursor: pointer;
+     transition: background-color 0.2s ease; flex-shrink: 0; /* Prevent button shrinking */
+}
+.offering-card .book-btn:hover { background-color: #218838; }
+
+/* Loading/Error/Empty Messages */
+.loading-indicator p, .error-message, .empty-message {
+    text-align: center; padding: 20px; font-style: italic; color: #666;
+}
+.error-message { color: #dc3545; font-weight: bold; }
+
+/* Profile Section Styling */
+#account-details .edit-profile-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85em;
+    margin-top: 10px;
+    display: inline-block; /* Allow margin-top */
+}
+#account-details .edit-profile-btn:hover { background-color: #0056b3; }
+
+#profile-edit-form { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
+#profile-edit-form label { display: block; margin-bottom: 5px; font-weight: bold; }
+#profile-edit-form input[type="text"],
+#profile-edit-form input[type="email"],
+#profile-edit-form input[type="tel"] {
+     width: calc(100% - 22px); /* Account for padding/border */
+     padding: 8px 10px;
+     margin-bottom: 10px;
+     border: 1px solid #ccc;
+     border-radius: 4px;
+}
+#profile-edit-form .form-actions button {
+     padding: 8px 15px;
+     border-radius: 4px;
+     cursor: pointer;
+     border: none;
+     margin-right: 10px;
+}
+#profile-edit-form .save-btn { background-color: #28a745; color: white; }
+#profile-edit-form .cancel-btn { background-color: #6c757d; color: white; }
+#profile-edit-form .save-btn:hover { background-color: #218838; }
+#profile-edit-form .cancel-btn:hover { background-color: #5a6268; }
+.profile-message-area { margin-top: 10px; font-size: 0.9em; }
+
+/* Password Change Form Styling */
+#change-password { margin-top: 20px; }
+#password-change-form label { display: block; margin-bottom: 5px; font-weight: bold; }
+#password-change-form input[type="password"] {
+     width: calc(100% - 22px); /* Account for padding/border */
+     padding: 8px 10px;
+     margin-bottom: 10px;
+     border: 1px solid #ccc;
+     border-radius: 4px;
+}
+#password-change-form .form-actions button {
+     padding: 8px 15px;
+     border-radius: 4px;
+     cursor: pointer;
+     border: none;
+     background-color: #ff8c00; /* Orange theme for password button? */
+     color: white;
+}
+#password-change-form .form-actions button:hover { background-color: #cc7000; }
+.password-message-area { margin-top: 10px; font-size: 0.9em; }
+
+/* Password Hint Styling */
+.password-hint {
+    font-size: 0.85em;
+    color: #6c757d; /* Muted grey color */
+    margin-top: -5px; /* Reduce space after input */
+    margin-bottom: 10px;
+}
+
+/* Table Styling Enhancements */
+th.sortable {
+    cursor: pointer;
+    position: relative;
+}
+
+th.sortable::after {
+    content: '\2195'; /* Up-down arrow */
+    position: absolute;
+    right: 10px;
+    opacity: 0.5;
+}
+
+th.sortable.asc::after {
+    content: '\2191'; /* Up arrow */
+    opacity: 1;
+}
+
+th.sortable.desc::after {
+    content: '\2193'; /* Down arrow */
+    opacity: 1;
+}
+
+/* Status Badges */
+.status {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: bold;
+    text-transform: capitalize;
+    color: #fff;
+    background-color: #6c757d; /* Default: grey */
+}
+
+.status-pending {
+    background-color: #ffc107; /* Yellow */
+    color: #333;
+}
+
+.status-confirmed {
+    background-color: #007bff; /* Blue */
+}
+
+.status-completed {
+    background-color: #28a745; /* Green */
+}
+
+.status-cancelled {
+    background-color: #dc3545; /* Red */
+}
+
+/* Add other specific status styles if needed */
+
+/* Cancel Button Styling */
+.cancel-appointment-btn {
+    background-color: #ffc107; /* Warning yellow/orange */
+    color: #333;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85em;
+}
+
+.cancel-appointment-btn:hover {
+    background-color: #e0a800;
+}
+
+/* Toast Notification Styling */
+#toast-notifications {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050; /* Ensure it's above most elements */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.toast {
+    background-color: #333;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    min-width: 250px;
+    max-width: 400px;
+    font-size: 0.95em;
+}
+
+.toast.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast.exiting {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.toast-success {
+    background-color: #28a745; /* Green */
+    color: white;
+}
+
+.toast-error {
+    background-color: #dc3545; /* Red */
+    color: white;
+}
+
+.toast-info {
+    background-color: #17a2b8; /* Info Blue */
+    color: white;
+}
+
+.toast-warning {
+    background-color: #ffc107; /* Yellow */
+    color: #333;
+}
+
+/* Booking Filter Buttons */
+.booking-filters {
+    margin-bottom: 15px;
+}
+
+.booking-filters button {
+    background-color: #e9ecef; /* Light grey, similar to table header */
+    color: #495057;
+    border: 1px solid #ced4da;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.booking-filters button:hover {
+    background-color: #dee2e6;
+}
+
+.booking-filters button.active {
+    background-color: #f178b6; /* Theme color */
+    color: #fff;
+    border-color: #f178b6;
+    font-weight: bold;
+}

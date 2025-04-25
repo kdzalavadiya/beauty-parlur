@@ -1,0 +1,494 @@
+/* Mobile Navigation Sidebar Styles */
+:root {
+    --sidebar-width: 280px;
+    --primary-color: #F178B6;
+    --secondary-color: #f7a7cf;
+    --text-color: #333;
+    --bg-color: #fff;
+    --transition-timing: cubic-bezier(0.65, 0, 0.35, 1);
+    --animation-duration: 0.5s;
+}
+
+/* Mobile Sidebar */
+.mobile-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    max-height: 100%;
+    background: white;
+    z-index: 1000;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    will-change: transform; /* Performance optimization */
+    transform: translateX(100%);
+    -webkit-overflow-scrolling: touch; /* For smoother scrolling on iOS */
+    visibility: hidden; /* Hide by default */
+    padding-top: env(safe-area-inset-top); /* For iPhone X+ notch */
+    padding-bottom: env(safe-area-inset-bottom); /* For bottom bar on modern phones */
+}
+
+.mobile-sidebar.active {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+/* Sidebar Header */
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+}
+
+.sidebar-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+/* Sidebar Close Button */
+.sidebar-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    z-index: 1001;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+}
+
+.sidebar-close:hover {
+    background-color: rgba(241, 120, 182, 0.1);
+    color: #F178B6;
+}
+
+.sidebar-close i {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-close:hover i {
+    transform: rotate(90deg);
+}
+
+/* Sidebar Content */
+.sidebar-content {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Sidebar Navigation */
+.sidebar-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.sidebar-nav li {
+    margin-bottom: 10px;
+}
+
+.sidebar-nav a {
+    color: #333;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: block;
+    padding: 12px 15px;
+    position: relative;
+    border-radius: 4px;
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+}
+
+.sidebar-nav a::before {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 15px;
+    width: 0;
+    height: 2px;
+    background: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+.sidebar-nav a:hover, 
+.sidebar-nav a:focus,
+.sidebar-nav a.active {
+    color: var(--primary-color);
+    background-color: rgba(241, 120, 182, 0.05);
+}
+
+.sidebar-nav a:hover::before, 
+.sidebar-nav a:focus::before,
+.sidebar-nav a.active::before {
+    width: 30px;
+}
+
+/* Book Now Button */
+.sidebar-btn {
+    display: block;
+    padding: 14px 25px;
+    margin: 10px 0;
+    text-align: center;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(241, 120, 182, 0.3);
+    position: relative;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+}
+
+.sidebar-btn:hover,
+.sidebar-btn:focus {
+    background: #e06aa5;
+    box-shadow: 0 8px 20px rgba(241, 120, 182, 0.4);
+    transform: translateY(-2px);
+    color: white;
+}
+
+.sidebar-btn:active {
+    transform: scale(0.98);
+    background: #d056a0;
+}
+
+/* Ripple effect for touch feedback */
+.sidebar-btn .ripple,
+.sidebar-nav a .ripple {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple-animation 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    text-align: center;
+    font-size: 14px;
+    color: #777;
+    margin-top: auto;
+}
+
+.sidebar-footer p {
+    margin-bottom: 10px;
+}
+
+/* Social Media Icons */
+.sidebar-social {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.sidebar-social a {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f9f9f9;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.sidebar-social a:hover, 
+.sidebar-social a:focus {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* Overlay */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 999;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Menu Toggle Button */
+.menu-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 100;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.menu-toggle:hover {
+    background-color: rgba(241, 120, 182, 0.1);
+}
+
+.menu-toggle i {
+    font-size: 22px;
+    color: #333;
+    transition: transform 0.3s ease;
+}
+
+.menu-toggle.active i {
+    transform: rotate(90deg);
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: flex;
+    }
+    
+    .mobile-sidebar {
+        width: 85%;
+        max-width: 320px;
+    }
+    
+    .sidebar-nav li {
+        margin-bottom: 5px;
+    }
+    
+    .sidebar-nav a {
+        padding: 15px;
+        font-size: 16px;
+    }
+    
+    .nav-container {
+        padding: 15px 0;
+    }
+    
+    .nav-links {
+        display: none;
+    }
+    
+    .menu-toggle {
+        display: flex;
+    }
+    
+    .nav-actions {
+        display: flex;
+        align-items: center;
+    }
+    
+    .sidebar-nav a:active {
+        background-color: rgba(241, 120, 182, 0.1);
+        transform: scale(0.98);
+        transition: all 0.1s ease;
+    }
+}
+
+/* Prevent body scroll when menu is open */
+body.nav-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+/* Touch devices optimizations */
+@media (hover: none) {
+    .sidebar-nav a:active, .sidebar-btn:active, .sidebar-social a:active {
+        background-color: rgba(241, 120, 182, 0.15) !important;
+        transform: scale(0.98);
+        transition: all 0.1s ease;
+    }
+    
+    .sidebar-content {
+        padding-bottom: 100px; /* Extra padding for comfortable scrolling */
+    }
+    
+    .sidebar-nav a, .sidebar-btn, .sidebar-social a {
+        padding: 15px; /* Larger touch targets */
+    }
+}
+
+/* Landscape orientation fixes */
+@media (max-width: 768px) and (orientation: landscape) {
+    .mobile-sidebar {
+        padding: 15px 0;
+    }
+    
+    .sidebar-nav a {
+        padding: 10px 15px;
+    }
+    
+    .sidebar-header {
+        padding: 15px;
+    }
+}
+
+/* Scrollbar styling */
+.mobile-sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.mobile-sidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.mobile-sidebar::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 10px;
+}
+
+.mobile-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #ccc;
+}
+
+/* Main nav styles for mobile */
+@media (max-width: 768px) {
+    .logo {
+        font-size: 20px;
+    }
+    
+    .nav-links a {
+        font-size: 14px;
+        padding: 5px 10px;
+    }
+    
+    .btn-sm {
+        padding: 8px 15px;
+        font-size: 13px;
+    }
+}
+
+/* Fix input zoom on mobile */
+@media screen and (max-width: 768px) {
+    input, textarea, select, button {
+        font-size: 16px; /* Prevents zoom on focus in iOS */
+    }
+}
+
+/* Additional breakpoints for large mobile devices */
+@media screen and (min-width: 480px) and (max-width: 767px) {
+    .mobile-sidebar {
+        width: 320px;
+    }
+    
+    .sidebar-logo {
+        font-size: 22px;
+    }
+    
+    .sidebar-nav a {
+        font-size: 17px;
+        padding: 14px 16px;
+    }
+    
+    .sidebar-btn {
+        padding: 16px 28px;
+        font-size: 16px;
+    }
+}
+
+/* Fix for devices with notch/status bar */
+@supports (padding-top: env(safe-area-inset-top)) {
+    .mobile-sidebar {
+        padding-top: env(safe-area-inset-top);
+        padding-right: env(safe-area-inset-right);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+    }
+}
+
+/* Ensure modal z-index is higher than navigation */
+.modal, .modal-overlay {
+    z-index: 1100 !important; /* Higher than any navigation element */
+}
+
+.modal-content {
+    position: relative;
+    z-index: 1101;
+} 

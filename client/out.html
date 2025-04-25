@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - New Real Bridal Studio</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/dashboard-advanced.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <h2>Dashboard</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active">
+                        <a href="#overview">
+                            <i class="fas fa-home"></i>
+                            <span>Overview</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#profile">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#bookings">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Appointments</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#payments">
+                            <i class="fas fa-credit-card"></i>
+                            <span>Payments</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#services">
+                            <i class="fas fa-concierge-bell"></i>
+                            <span>Services</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="/" class="home-link">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Main Site</span>
+                </a>
+                <button id="logout-button" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <header class="dashboard-header">
+                <div class="header-content">
+                    <div class="user-welcome">
+                        <h1>Welcome, <span id="user-name">User</span>!</h1>
+                    </div>
+                    <div class="user-menu">
+                        <button class="user-menu-button">
+                            <div class="user-avatar">
+                                <span class="user-initials">U</span>
+                            </div>
+                            <span class="user-name">User</span>
+                        </button>
+                        <div class="user-menu-dropdown">
+                            <a href="#profile" class="user-menu-item" data-action="profile">My Profile</a>
+                            <a href="#bookings" class="user-menu-item" data-action="bookings">My Bookings</a>
+                            <a href="#" class="user-menu-item logout" data-action="logout">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Overview Section -->
+            <section id="overview" class="dashboard-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-calendar-check"></i>
+                        <div class="stat-content">
+                            <h3>Upcoming Appointments</h3>
+                            <p class="stat-value" id="upcoming-appointments">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-history"></i>
+                        <div class="stat-content">
+                            <h3>Total Bookings</h3>
+                            <p class="stat-value" id="total-bookings">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-star"></i>
+                        <div class="stat-content">
+                            <h3>Loyalty Points</h3>
+                            <p class="stat-value" id="loyalty-points">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="dashboard-actions">
+                    <h2>Quick Actions</h2>
+                    <div class="action-grid">
+                        <a href="#book-appointment" class="action-card">
+                            <i class="fas fa-calendar-plus"></i>
+                            <span>Book Appointment</span>
+                        </a>
+                        <a href="#view-bookings" class="action-card">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>View Bookings</span>
+                        </a>
+                        <a href="#edit-profile" class="action-card">
+                            <i class="fas fa-user-edit"></i>
+                            <span>Edit Profile</span>
+                        </a>
+                        <a href="#contact-support" class="action-card">
+                            <i class="fas fa-headset"></i>
+                            <span>Contact Support</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="recent-activity">
+                    <h2>Recent Activity</h2>
+                    <div class="activity-list" id="activity-list">
+                        <!-- Activity items will be loaded here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Profile Section -->
+            <section id="profile" class="dashboard-section">
+                <div class="section-header">
+                    <h2>My Profile</h2>
+                    <button id="edit-profile-btn" class="edit-profile-btn">
+                        <i class="fas fa-edit"></i>
+                        <span>Edit Profile</span>
+                    </button>
+                </div>
+                
+                <div id="profile-message-area"></div>
+                
+                <div class="profile-content">
+                    <div id="account-info" class="profile-info">
+                        <div class="loading-indicator">
+                            <p>Loading profile details...</p>
+                        </div>
+                    </div>
+
+                    <form id="profile-edit-form" class="profile-form">
+                        <div class="form-group">
+                            <label for="profile-name">Name</label>
+                            <input type="text" id="profile-name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-email">Email</label>
+                            <input type="email" id="profile-email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-phone">Phone</label>
+                            <input type="tel" id="profile-phone" name="phone" placeholder="Optional">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="save-btn">
+                                <i class="fas fa-save"></i>
+                                <span>Save Changes</span>
+                            </button>
+                            <button type="button" id="cancel-edit-profile-btn" class="cancel-btn">
+                                <i class="fas fa-times"></i>
+                                <span>Cancel</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="password-section">
+                    <h3>Change Password</h3>
+                    <div id="password-message-area"></div>
+                    <form id="password-change-form" class="password-form">
+                        <div class="form-group">
+                            <label for="current-password">Current Password</label>
+                            <input type="password" id="current-password" name="currentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-password">New Password</label>
+                            <input type="password" id="new-password" name="newPassword" required>
+                            <div class="password-hint">
+                                Password must be at least 8 characters long and include a mix of letters, numbers, and symbols.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm-new-password">Confirm New Password</label>
+                            <input type="password" id="confirm-new-password" name="confirmNewPassword" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="save-btn">
+                                <i class="fas fa-key"></i>
+                                <span>Change Password</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Appointments Section -->
+            <section id="bookings" class="dashboard-section">
+                <div class="section-header">
+                    <h2>My Appointments</h2>
+                    <div class="booking-filters">
+                        <button data-filter="all" class="active">All</button>
+                        <button data-filter="upcoming">Upcoming</button>
+                        <button data-filter="past">Past</button>
+                        <button data-filter="cancelled">Cancelled</button>
+                    </div>
+                </div>
+                <div id="bookings-list" class="bookings-container">
+                    <div class="loading-indicator">
+                        <p>Loading appointments...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Payments Section -->
+            <section id="payments" class="dashboard-section">
+                <h2>Payment History</h2>
+                <div id="payments-list" class="payments-container">
+                    <div class="loading-indicator">
+                        <p>Loading payment history...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Services Section -->
+            <section id="services" class="dashboard-section">
+                <h2>Browse Services</h2>
+                <div class="services-container">
+                    <div id="services-list" class="services-grid">
+                        <div class="loading-indicator">
+                            <p>Loading services...</p>
+                        </div>
+                    </div>
+                    
+                    <div id="packages-list" class="packages-grid">
+                        <h3>Packages</h3>
+                        <div class="loading-indicator">
+                            <p>Loading packages...</p>
+                        </div>
+                    </div>
+                    
+                    <div id="products-list" class="products-grid">
+                        <h3>Products</h3>
+                        <div class="loading-indicator">
+                            <p>Loading products...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-notifications"></div>
+
+    <script src="/js/auth.js"></script> 
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,530 @@
+/**
+ * Wedding Timeline Component
+ * An elegant timeline showing the bridal preparation process
+ */
+
+.timeline-section {
+    padding: 80px 0;
+    background: linear-gradient(135deg, #fff5f8 0%, #fff 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.timeline-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: linear-gradient(135deg, rgba(241, 120, 182, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+    z-index: 0;
+}
+
+.timeline-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+}
+
+.timeline {
+    position: relative;
+    margin: 60px 0;
+    padding: 20px 0;
+}
+
+/* Main line */
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 4px;
+    background: linear-gradient(to bottom, rgba(241, 120, 182, 0.2), rgba(241, 120, 182, 0.8), rgba(241, 120, 182, 0.2));
+    transform: translateX(-50%);
+    border-radius: 2px;
+    z-index: 1;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 60px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease;
+    width: 100%;
+}
+
+.timeline-item.animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-content {
+    position: relative;
+    width: 45%;
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    z-index: 2;
+}
+
+.timeline-content:hover,
+.timeline-item.active .timeline-content {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(241, 120, 182, 0.15);
+}
+
+/* Left and right positioning */
+.timeline-item:nth-child(even) .timeline-content {
+    margin-left: auto;
+}
+
+/* Timeline dots */
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border: 4px solid #F178B6;
+    border-radius: 50%;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.timeline-item:hover::before,
+.timeline-item.active::before {
+    transform: translateX(-50%) scale(1.2);
+    box-shadow: 0 0 0 6px rgba(241, 120, 182, 0.2);
+    background-color: #F178B6;
+}
+
+/* Timeline arrows */
+.timeline-item:nth-child(odd) .timeline-content::after {
+    content: '';
+    position: absolute;
+    right: -15px;
+    top: 30px;
+    width: 0;
+    height: 0;
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    border-left: 15px solid white;
+}
+
+.timeline-item:nth-child(even) .timeline-content::after {
+    content: '';
+    position: absolute;
+    left: -15px;
+    top: 30px;
+    width: 0;
+    height: 0;
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    border-right: 15px solid white;
+}
+
+/* Timeline date/time */
+.timeline-date {
+    display: inline-block;
+    padding: 5px 15px;
+    background-color: rgba(241, 120, 182, 0.1);
+    border-radius: 20px;
+    color: #F178B6;
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* Timeline headings */
+.timeline-title {
+    font-size: 22px;
+    margin-bottom: 15px;
+    color: #333;
+    font-family: 'Playfair Display', serif;
+}
+
+/* Timeline descriptions */
+.timeline-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #555;
+}
+
+/* Timeline icons */
+.timeline-icon {
+    position: absolute;
+    top: -15px;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #F178B6, #8A2BE2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    z-index: 4;
+    box-shadow: 0 5px 15px rgba(241, 120, 182, 0.3);
+}
+
+.timeline-item:nth-child(odd) .timeline-icon {
+    right: 20px;
+}
+
+.timeline-item:nth-child(even) .timeline-icon {
+    left: 20px;
+}
+
+/* Timeline image */
+.timeline-image {
+    width: 100%;
+    height: auto;
+    margin: 15px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-image img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    display: block;
+}
+
+.timeline-content:hover .timeline-image img {
+    transform: scale(1.05);
+}
+
+/* Timeline CTA section */
+.timeline-cta {
+    text-align: center;
+    margin-top: 50px;
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.timeline-cta p {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.timeline-cta .btn {
+    display: inline-block;
+    padding: 12px 30px;
+    background-color: #F178B6;
+    color: white;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.timeline-cta .btn:hover {
+    background-color: #e0609d;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(241, 120, 182, 0.3);
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 1024px) {
+    .timeline-content {
+        width: 48%;
+    }
+    
+    .timeline-title {
+        font-size: 20px;
+    }
+    
+    .timeline-text {
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .timeline-section {
+        padding: 40px 0;
+    }
+    
+    .timeline::before {
+        left: 30px;
+    }
+    
+    .timeline-item::before {
+        left: 30px;
+        transform: translateX(0);
+    }
+    
+    .timeline-item:hover::before,
+    .timeline-item.active::before {
+        transform: translateX(0) scale(1.2);
+    }
+    
+    .timeline-content {
+        width: calc(100% - 80px);
+        margin-left: 60px !important;
+        margin-right: 0 !important;
+        text-align: left !important;
+        padding: 20px;
+    }
+    
+    .timeline-item:nth-child(odd) .timeline-content::after,
+    .timeline-item:nth-child(even) .timeline-content::after {
+        display: none;
+    }
+    
+    .timeline-item:nth-child(odd) .timeline-icon,
+    .timeline-item:nth-child(even) .timeline-icon {
+        left: 10px;
+        right: auto;
+    }
+    
+    .timeline-title {
+        font-size: 18px;
+    }
+    
+    .timeline-text {
+        font-size: 14px;
+    }
+    
+    .timeline-date {
+        font-size: 13px;
+        padding: 4px 12px;
+    }
+    
+    .timeline-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .timeline-section {
+        padding: 30px 0;
+    }
+    
+    .timeline::before {
+        left: 18px;
+        width: 3px;
+    }
+    
+    .timeline-item::before {
+        left: 18px;
+        width: 14px;
+        height: 14px;
+        border-width: 3px;
+    }
+    
+    .timeline-content {
+        width: calc(100% - 50px);
+        margin-left: 35px !important;
+        padding: 15px;
+    }
+    
+    .timeline-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+        left: 6px !important;
+        top: -12px;
+    }
+    
+    .timeline-title {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    
+    .timeline-date {
+        margin-bottom: 5px;
+        font-size: 12px;
+        padding: 3px 10px;
+    }
+    
+    .timeline-image {
+        margin: 10px 0;
+    }
+    
+    .timeline-text {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+}
+
+/* Extra small screens */
+@media screen and (max-width: 360px) {
+    .timeline-content {
+        width: calc(100% - 40px);
+        margin-left: 30px !important;
+        padding: 12px;
+    }
+    
+    .timeline::before {
+        left: 15px;
+    }
+    
+    .timeline-item::before {
+        left: 15px;
+    }
+    
+    .timeline-icon {
+        left: 3px !important;
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+    }
+}
+
+/* Disable hover effects on mobile */
+@media (hover: none) {
+    .timeline-content:hover {
+        transform: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+    
+    .timeline-content:hover .timeline-image img {
+        transform: none;
+    }
+    
+    .timeline-item:hover::before {
+        transform: translateX(0) scale(1);
+        box-shadow: none;
+        background-color: white;
+    }
+}
+
+/* Print styles */
+@media print {
+    .timeline-section {
+        background: none;
+        padding: 0;
+    }
+    
+    .timeline-content {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+    
+    .timeline::before {
+        background: #ddd;
+    }
+    
+    .timeline-item::before {
+        background: white;
+        border: 2px solid #F178B6;
+    }
+    
+    .timeline-image {
+        box-shadow: none;
+    }
+}
+
+/* Animation styles */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Force showing timeline items for non-JS browsers */
+.no-js .timeline-item {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Mobile-specific classes */
+.timeline-section.mobile-view {
+    padding-bottom: 40px; /* Extra padding at bottom */
+}
+
+.timeline-item.mobile-item {
+    transform: none;
+    transition: opacity 0.4s ease;
+}
+
+.timeline-item.mobile-item.active .timeline-content {
+    border-left: 3px solid #F178B6;
+}
+
+/* Enhanced touch feedback */
+@media (max-width: 768px) {
+    .timeline-content:active {
+        transform: translateY(0) !important;
+        background-color: rgba(241, 120, 182, 0.05);
+    }
+    
+    .timeline-item.active .timeline-content {
+        background-color: rgba(241, 120, 182, 0.05);
+        box-shadow: 0 10px 30px rgba(241, 120, 182, 0.15);
+    }
+}
+
+/* Ensure full visibility on narrow screens */
+@media screen and (max-width: 320px) {
+    .timeline-content {
+        width: calc(100% - 35px);
+        margin-left: 25px !important;
+        padding: 10px;
+    }
+    
+    .timeline::before {
+        left: 12px;
+    }
+    
+    .timeline-item::before {
+        left: 12px;
+        width: 12px;
+        height: 12px;
+    }
+    
+    .timeline-icon {
+        left: 0px !important;
+        width: 22px;
+        height: 22px;
+        font-size: 10px;
+    }
+    
+    .timeline-title {
+        font-size: 15px;
+    }
+    
+    .timeline-date {
+        font-size: 11px;
+        padding: 2px 8px;
+    }
+}
+
+/* Fix for very tall phones */
+@media screen and (max-height: 700px) and (max-width: 480px) {
+    .timeline-item {
+        margin-bottom: 40px; /* Reduce spacing between items */
+    }
+    
+    .timeline-content {
+        padding-bottom: 10px;
+    }
+} 
